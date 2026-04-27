@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -23,6 +22,9 @@ const BLOCK_TYPE = "marketplaces.dve-palochki.contacts-map";
 
 const ContactsMapBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 	const p = block.props;
+
+	if (!p.address && !p.phones.length && !p.email && !p.hours && !p.mapEmbedUrl) return null;
+
 	return (
 		<section className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:grid-cols-2">
 			<dl className="space-y-4 text-sm">
@@ -105,16 +107,13 @@ export const dvePalochkiContactsMapDefinition = definePhotonBlockDefinition<Prop
 		icon: "map-pin",
 		component: ContactsMapBlock,
 		defaults: {
-			addressTitle: createPhotonLocalizedDefault({ ru: "Адрес", en: "Address" }),
+			addressTitle: "",
 			address: "",
-			phonesTitle: createPhotonLocalizedDefault({ ru: "Телефоны", en: "Phones" }),
+			phonesTitle: "",
 			phones: [],
-			emailTitle: "Email",
+			emailTitle: "",
 			email: "",
-			hoursTitle: createPhotonLocalizedDefault({
-				ru: "Время работы",
-				en: "Hours",
-			}),
+			hoursTitle: "",
 			hours: "",
 			mapEmbedUrl: "",
 		},
