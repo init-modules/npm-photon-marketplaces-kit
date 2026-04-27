@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -73,11 +72,8 @@ export const dvePalochkiInstagramStripDefinition =
 		icon: "instagram",
 		component: InstagramStripBlock,
 		defaults: {
-			handle: "@dve_palochki.kz",
-			ctaLabel: createPhotonLocalizedDefault({
-				ru: "Подписаться",
-				en: "Follow",
-			}),
+			handle: "",
+			ctaLabel: "",
 			tiles: [],
 		},
 		fields: [
