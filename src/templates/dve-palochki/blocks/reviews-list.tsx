@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -52,6 +51,9 @@ const Stars = ({ value }: { value: number }) => (
 
 const ReviewsListBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 	const p = block.props;
+
+	if (!p.formTitle && !p.emptyTitle && !p.formSubmitLabel) return null;
+
 	return (
 		<section className="mx-auto w-full max-w-4xl space-y-8 px-4 py-6">
 			{p.reviews.length > 0 ? (
@@ -74,7 +76,7 @@ const ReviewsListBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 							{r.adminReply ? (
 								<div className="mt-3 rounded-md bg-[var(--photon-site-surface-muted,#F4F4F5)] p-3">
 									<div className="text-xs font-semibold uppercase tracking-wide text-[var(--photon-site-muted-text,#5C5C5C)]">
-										{p.adminReplyLabel || "Admin reply"}
+										{p.adminReplyLabel}
 									</div>
 									<p className="mt-1 text-sm">{r.adminReply}</p>
 								</div>
@@ -136,35 +138,14 @@ export const dvePalochkiReviewsListDefinition = definePhotonBlockDefinition<Prop
 		icon: "star",
 		component: ReviewsListBlock,
 		defaults: {
-			emptyTitle: createPhotonLocalizedDefault({
-				ru: "Отзывов пока нет",
-				en: "No reviews yet",
-			}),
-			emptyBody: createPhotonLocalizedDefault({
-				ru: "Будьте первым, кто поделится своим мнением",
-				en: "Be the first to share your opinion",
-			}),
-			formTitle: createPhotonLocalizedDefault({
-				ru: "Оставить отзыв",
-				en: "Leave a review",
-			}),
-			formBodyPlaceholder: createPhotonLocalizedDefault({
-				ru: "Отзыв ...",
-				en: "Review ...",
-			}),
-			formNamePlaceholder: createPhotonLocalizedDefault({
-				ru: "Имя",
-				en: "Name",
-			}),
-			formEmailPlaceholder: "Email",
-			formSubmitLabel: createPhotonLocalizedDefault({
-				ru: "Опубликовать",
-				en: "Publish",
-			}),
-			adminReplyLabel: createPhotonLocalizedDefault({
-				ru: "Ответ администратора",
-				en: "Admin reply",
-			}),
+			emptyTitle: "",
+			emptyBody: "",
+			formTitle: "",
+			formBodyPlaceholder: "",
+			formNamePlaceholder: "",
+			formEmailPlaceholder: "",
+			formSubmitLabel: "",
+			adminReplyLabel: "",
 			reviews: [],
 		},
 		fields: [
