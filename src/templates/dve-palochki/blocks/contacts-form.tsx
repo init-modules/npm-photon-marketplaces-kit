@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -21,6 +20,9 @@ const BLOCK_TYPE = "marketplaces.dve-palochki.contacts-form";
 
 const ContactsFormBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 	const p = block.props;
+
+	if (!p.title && !p.namePlaceholder && !p.submitLabel) return null;
+
 	return (
 		<section className="mx-auto w-full max-w-3xl px-4 py-8">
 			<h2 className="text-2xl font-semibold">{p.title}</h2>
@@ -81,29 +83,14 @@ export const dvePalochkiContactsFormDefinition = definePhotonBlockDefinition<Pro
 		icon: "mail-question",
 		component: ContactsFormBlock,
 		defaults: {
-			title: createPhotonLocalizedDefault({
-				ru: "Есть вопросы? Свяжитесь с нами!",
-				en: "Got questions? Get in touch!",
-			}),
+			title: "",
 			subtitle: "",
-			namePlaceholder: createPhotonLocalizedDefault({ ru: "Имя", en: "Name" }),
-			emailPlaceholder: "Email",
-			phonePlaceholder: createPhotonLocalizedDefault({
-				ru: "Телефон",
-				en: "Phone",
-			}),
-			messagePlaceholder: createPhotonLocalizedDefault({
-				ru: "Текст сообщения",
-				en: "Message",
-			}),
-			submitLabel: createPhotonLocalizedDefault({
-				ru: "Отправить",
-				en: "Send",
-			}),
-			successMessage: createPhotonLocalizedDefault({
-				ru: "Спасибо! Мы свяжемся с вами в ближайшее время.",
-				en: "Thanks! We will reach out shortly.",
-			}),
+			namePlaceholder: "",
+			emailPlaceholder: "",
+			phonePlaceholder: "",
+			messagePlaceholder: "",
+			submitLabel: "",
+			successMessage: "",
 		},
 		fields: [
 			{ path: "title", label: "Title", kind: "text", localization: "localized" },
