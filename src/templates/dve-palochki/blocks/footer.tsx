@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	PhotonLink,
 	type PhotonBlock,
@@ -150,34 +149,19 @@ export const dvePalochkiFooterDefinition = definePhotonBlockDefinition<FooterPro
 		icon: "panel-bottom",
 		component: FooterBlock,
 		defaults: {
-			brandLabel: createPhotonLocalizedDefault({
-				ru: "Две палочки",
-				en: "Two Sticks",
-			}),
-			brandDescription: createPhotonLocalizedDefault({
-				ru: "Мы являемся лидером по доставке суши в Алматы.",
-				en: "Sushi delivery leader in Almaty.",
-			}),
-			logoUrl: "/marketplaces/dve-palochki/logo-light.svg",
-			categoriesTitle: createPhotonLocalizedDefault({
-				ru: "Категории товаров",
-				en: "Product categories",
-			}),
+			brandLabel: "",
+			brandDescription: "",
+			logoUrl: "",
+			categoriesTitle: "",
 			categories: [],
-			contactsTitle: createPhotonLocalizedDefault({
-				ru: "Контакты",
-				en: "Contacts",
-			}),
+			contactsTitle: "",
 			phones: [],
-			address: createPhotonLocalizedDefault({
-				ru: "Казахстан, г. Алматы, ул. Абиша Кекилбайулы 149А",
-				en: "Almaty, Kazakhstan, Abish Kekilbayuly 149A",
-			}),
+			address: "",
 			cta: null,
 			legalLinks: [],
-			copyright: "© 2014 - 2026 \"Две палочки\". Все права защищены.",
-			credit: "Разработка сайтов · Веб студия",
-			creditHref: "#",
+			copyright: "",
+			credit: "",
+			creditHref: "",
 		},
 		fields: [
 			{
