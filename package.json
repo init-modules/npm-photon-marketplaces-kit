@@ -23,7 +23,10 @@
 		"react-dom": "^19.0.0"
 	},
 	"devDependencies": {
+		"@init/commerce": "file:../../commerce-foundation/commerce",
 		"@init/commerce-photon": "file:../../commerce-foundation/commerce-photon",
+		"@init/commerce-profile-templates": "file:../../commerce-foundation/commerce-profile-templates",
+		"@init/next-data-flow": "file:../../next-data-flow",
 		"@init/photon": "file:../../photon-foundation/photon",
 		"@init/photon-nextjs": "file:../../photon-foundation/photon-nextjs",
 		"@init/ui": "file:../../ui-foundation/ui",
@@ -31,6 +34,7 @@
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"lucide-react": "^0.556.0",
+		"next": "16.0.8",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"typescript": "^5.9.3"

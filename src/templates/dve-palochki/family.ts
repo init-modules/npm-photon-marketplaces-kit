@@ -466,6 +466,11 @@ const reviewsListBlock = (
 			kz: "Жариялау",
 			en: "Publish",
 		}),
+		adminReplyLabel: t(locale, {
+			ru: "Ответ администратора",
+			kz: "Әкiмшiнiң жауабы",
+			en: "Admin reply",
+		}),
 		reviews: scenario.reviews.map((r) => ({
 			id: r.id,
 			clientName: r.clientName,

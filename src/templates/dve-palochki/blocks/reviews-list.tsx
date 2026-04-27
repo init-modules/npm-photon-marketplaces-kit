@@ -24,6 +24,7 @@ type Props = {
 	formNamePlaceholder: string;
 	formEmailPlaceholder: string;
 	formSubmitLabel: string;
+	adminReplyLabel: string;
 	reviews: Review[];
 };
 
@@ -73,10 +74,7 @@ const ReviewsListBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 							{r.adminReply ? (
 								<div className="mt-3 rounded-md bg-[var(--photon-site-surface-muted,#F4F4F5)] p-3">
 									<div className="text-xs font-semibold uppercase tracking-wide text-[var(--photon-site-muted-text,#5C5C5C)]">
-										{createPhotonLocalizedDefault({
-											ru: "Ответ администратора",
-											en: "Admin reply",
-										})}
+										{p.adminReplyLabel || "Admin reply"}
 									</div>
 									<p className="mt-1 text-sm">{r.adminReply}</p>
 								</div>
@@ -162,6 +160,10 @@ export const dvePalochkiReviewsListDefinition = definePhotonBlockDefinition<Prop
 			formSubmitLabel: createPhotonLocalizedDefault({
 				ru: "Опубликовать",
 				en: "Publish",
+			}),
+			adminReplyLabel: createPhotonLocalizedDefault({
+				ru: "Ответ администратора",
+				en: "Admin reply",
 			}),
 			reviews: [],
 		},

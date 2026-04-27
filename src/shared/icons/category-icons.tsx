@@ -131,7 +131,7 @@ const DessertIcon = (p: SVGProps<SVGSVGElement>) => (
 
 const ICONS: Record<
 	MarketplaceCategoryIconKey,
-	(p: SVGProps<SVGSVGElement>) => JSX.Element
+	(p: SVGProps<SVGSVGElement>) => ReactElement
 > = {
 	supplements: SupplementsIcon,
 	rolls: RollsIcon,

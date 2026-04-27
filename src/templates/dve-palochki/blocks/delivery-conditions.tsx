@@ -44,10 +44,7 @@ const DeliveryConditionsBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 						{p.streetLeft}
 					</div>
 					<div className="flex h-full flex-col items-center justify-center rounded-md bg-[var(--photon-site-surface-muted,#F4F4F5)] text-center text-sm font-semibold">
-						{createPhotonLocalizedDefault({
-							ru: "Бесплатная доставка",
-							en: "Free delivery",
-						})}
+						{p.areaTitle}
 					</div>
 					<div className="rotate-90 self-center justify-self-center">
 						{p.streetRight}
