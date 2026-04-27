@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -21,6 +20,9 @@ const BLOCK_TYPE = "marketplaces.dve-palochki.delivery-conditions";
 
 const DeliveryConditionsBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 	const p = block.props;
+
+	if (!p.areaTitle && !p.streetTop && !p.streetBottom && !p.streetLeft && !p.streetRight && !p.paymentBlocks.length) return null;
+
 	return (
 		<section className="mx-auto w-full max-w-3xl px-4 py-8">
 			{p.paymentBlocks.length > 0 ? (
@@ -70,10 +72,7 @@ export const dvePalochkiDeliveryConditionsDefinition =
 		icon: "truck",
 		component: DeliveryConditionsBlock,
 		defaults: {
-			areaTitle: createPhotonLocalizedDefault({
-				ru: "Бесплатная доставка только в пределах квадрата",
-				en: "Free delivery within the marked area only",
-			}),
+			areaTitle: "",
 			streetTop: "",
 			streetBottom: "",
 			streetLeft: "",
