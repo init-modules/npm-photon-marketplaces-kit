@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	type PhotonBlock,
 } from "@init/photon/public";
@@ -62,11 +61,8 @@ export const dvePalochkiRecommendedStripDefinition =
 		icon: "rows-3",
 		component: RecommendedStripBlock,
 		defaults: {
-			eyebrow: createPhotonLocalizedDefault({ ru: "Каталог", en: "Catalog" }),
-			title: createPhotonLocalizedDefault({
-				ru: "Лучшие предложения",
-				en: "Best offers",
-			}),
+			eyebrow: "",
+			title: "",
 			description: "",
 		},
 		fields: [
