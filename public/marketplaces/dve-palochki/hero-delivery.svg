@@ -1,0 +1,27 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Hero placeholder: delivery theme -->
+  <defs>
+    <linearGradient id="heroGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff0f5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffe0eb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#heroGrad3)"/>
+  <!-- Delivery illustration -->
+  <g transform="translate(600, 300)">
+    <!-- Scooter/bike silhouette -->
+    <circle cx="-60" cy="20" r="25" fill="none" stroke="#E32636" stroke-width="3"/>
+    <circle cx="60" cy="20" r="25" fill="none" stroke="#E32636" stroke-width="3"/>
+    <!-- Frame -->
+    <path d="M -60 20 L -30 -40 L 30 -40 L 60 20" fill="none" stroke="#E32636" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Package -->
+    <rect x="-20" y="-60" width="40" height="35" rx="4" fill="#E32636"/>
+    <text x="0" y="-32" font-size="24" fill="#fff" font-weight="700" text-anchor="middle">📦</text>
+    <!-- Speed lines -->
+    <line x1="-100" y1="-20" x2="-140" y2="-20" stroke="#E32636" stroke-width="2" opacity="0.6"/>
+    <line x1="-110" y1="0" x2="-160" y2="0" stroke="#E32636" stroke-width="2" opacity="0.5"/>
+  </g>
+  <!-- Text overlay -->
+  <text x="600" y="500" font-family="system-ui" font-size="48" font-weight="700" fill="#1a1a1a" text-anchor="middle">Быстрая доставка</text>
+  <text x="600" y="550" font-family="system-ui" font-size="24" fill="#666" text-anchor="middle">Горячее блюдо прямо к вам</text>
+</svg>
