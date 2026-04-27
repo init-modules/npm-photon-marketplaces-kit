@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	PhotonLink,
 	type PhotonBlock,
@@ -68,12 +67,14 @@ const HeaderBlock = ({ block }: { block: PhotonBlock<HeaderProps> }) => {
 						</span>
 					</div>
 					<div className="hidden items-center gap-4 md:flex">
-						<a
-							href={`tel:${props.primaryPhone.replace(/[^+\d]/g, "")}`}
-							className="inline-flex items-center gap-1.5 font-medium hover:text-[var(--mp-accent,#E32636)]"
-						>
-							<Phone className="h-3.5 w-3.5" /> {props.primaryPhone}
-						</a>
+						{props.primaryPhone ? (
+							<a
+								href={`tel:${props.primaryPhone.replace(/[^+\d]/g, "")}`}
+								className="inline-flex items-center gap-1.5 font-medium hover:text-[var(--mp-accent,#E32636)]"
+							>
+								<Phone className="h-3.5 w-3.5" /> {props.primaryPhone}
+							</a>
+						) : null}
 						<nav className="flex items-center gap-3">
 							{props.supportLinks.map((l) => (
 								<PhotonLink
@@ -187,36 +188,18 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 		icon: "panel-top",
 		component: HeaderBlock,
 		defaults: {
-			brandLabel: createPhotonLocalizedDefault({
-				ru: "Две палочки",
-				en: "Two Sticks",
-			}),
-			brandTagline: createPhotonLocalizedDefault({
-				ru: "Доставка суши и пиццы",
-				en: "Sushi & pizza delivery",
-			}),
-			logoUrl: "/marketplaces/dve-palochki/logo.svg",
-			homeHref: "/",
-			deliveryNote: createPhotonLocalizedDefault({
-				ru: "Доставим за",
-				en: "Delivery in",
-			}),
-			deliveryHighlight: "60–90 минут",
-			primaryPhone: "+7 (702) 384-57-77",
-			searchPlaceholder: createPhotonLocalizedDefault({
-				ru: "Каталог",
-				en: "Catalog",
-			}),
-			accountLabel: createPhotonLocalizedDefault({
-				ru: "Личный кабинет",
-				en: "Account",
-			}),
-			accountHref: "/account/orders",
-			cartLabel: createPhotonLocalizedDefault({
-				ru: "Корзина",
-				en: "Cart",
-			}),
-			cartHref: "/cart",
+			brandLabel: "",
+			brandTagline: "",
+			logoUrl: "",
+			homeHref: "",
+			deliveryNote: "",
+			deliveryHighlight: "",
+			primaryPhone: "",
+			searchPlaceholder: "",
+			accountLabel: "",
+			accountHref: "",
+			cartLabel: "",
+			cartHref: "",
 			categories: [],
 			supportLinks: [],
 			localeSwitcher: [],
@@ -241,6 +224,7 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 				label: "Logo URL",
 				kind: "image",
 				group: "content",
+				localization: "shared",
 			},
 			{
 				path: "deliveryHighlight",
