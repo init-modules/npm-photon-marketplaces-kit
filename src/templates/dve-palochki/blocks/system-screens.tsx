@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	PhotonLink,
 	type PhotonBlock,
@@ -18,6 +17,9 @@ const SUCCESS_BLOCK_TYPE = "marketplaces.dve-palochki.success-screen";
 
 const SuccessBlock = ({ block }: { block: PhotonBlock<SuccessProps> }) => {
 	const p = block.props;
+
+	if (!p.title && !p.primaryLabel) return null;
+
 	return (
 		<section className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 px-4 py-16 text-center">
 			<div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[var(--mp-accent,#E32636)]/10 text-[var(--mp-accent,#E32636)]">
@@ -48,19 +50,10 @@ export const dvePalochkiSuccessScreenDefinition =
 		icon: "check-circle",
 		component: SuccessBlock,
 		defaults: {
-			title: createPhotonLocalizedDefault({
-				ru: "Заказ успешно оформлен!",
-				en: "Order placed successfully!",
-			}),
-			body: createPhotonLocalizedDefault({
-				ru: "Мы свяжемся с вами для подтверждения заказа.",
-				en: "We will contact you to confirm the order.",
-			}),
-			primaryLabel: createPhotonLocalizedDefault({
-				ru: "На главную",
-				en: "Back to home",
-			}),
-			primaryHref: "/",
+			title: "",
+			body: "",
+			primaryLabel: "",
+			primaryHref: "",
 		},
 		fields: [
 			{ path: "title", label: "Title", kind: "text", localization: "localized" },
@@ -91,6 +84,9 @@ const NOT_FOUND_BLOCK_TYPE = "marketplaces.dve-palochki.not-found-screen";
 
 const NotFoundBlock = ({ block }: { block: PhotonBlock<NotFoundProps> }) => {
 	const p = block.props;
+
+	if (!p.title && !p.primaryLabel) return null;
+
 	return (
 		<section className="mx-auto flex w-full max-w-2xl flex-col items-center gap-4 px-4 py-20 text-center">
 			<div className="text-7xl font-bold tracking-tight text-[var(--mp-accent,#E32636)]">
@@ -119,19 +115,10 @@ export const dvePalochkiNotFoundScreenDefinition =
 		icon: "ghost",
 		component: NotFoundBlock,
 		defaults: {
-			title: createPhotonLocalizedDefault({
-				ru: "Эта страница не найдена.",
-				en: "This page was not found.",
-			}),
-			body: createPhotonLocalizedDefault({
-				ru: "Неправильно набран адрес, или такой страницы на сайте не существует.",
-				en: "The address may be wrong, or the page no longer exists.",
-			}),
-			primaryLabel: createPhotonLocalizedDefault({
-				ru: "На главную",
-				en: "Back to home",
-			}),
-			primaryHref: "/",
+			title: "",
+			body: "",
+			primaryLabel: "",
+			primaryHref: "",
 		},
 		fields: [
 			{ path: "title", label: "Title", kind: "text", localization: "localized" },
