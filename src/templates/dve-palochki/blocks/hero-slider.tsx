@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	PhotonLink,
 	type PhotonBlock,
@@ -125,19 +124,8 @@ export const dvePalochkiHeroSliderDefinition =
 		icon: "image-play",
 		component: HeroSliderBlock,
 		defaults: {
-			slides: [
-				{
-					id: "slide-1",
-					imageUrl: "/marketplaces/dve-palochki/hero-halal.jpg",
-					title: createPhotonLocalizedDefault({ ru: "HALAL", en: "HALAL" }),
-					subtitle: createPhotonLocalizedDefault({
-						ru: "Вся еда соответствует халяльным стандартам",
-						en: "All food is halal",
-					}),
-					overlay: "soft",
-				},
-			],
-			autoplayMs: 5000,
+			slides: [],
+			autoplayMs: 0,
 			height: "lg",
 		},
 		fields: [
