@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	createPhotonLocalizedDefault,
 	definePhotonBlockDefinition,
 	PhotonLink,
 	type PhotonBlock,
@@ -70,26 +69,7 @@ export const dvePalochkiMobileBottomBarDefinition =
 		icon: "panel-bottom-dashed",
 		component: MobileBottomBarBlock,
 		defaults: {
-			items: [
-				{
-					id: "menu",
-					label: createPhotonLocalizedDefault({ ru: "Меню", en: "Menu" }),
-					href: "/archive",
-					icon: "menu",
-				},
-				{
-					id: "cart",
-					label: createPhotonLocalizedDefault({ ru: "Корзина", en: "Cart" }),
-					href: "/cart",
-					icon: "cart",
-				},
-				{
-					id: "account",
-					label: createPhotonLocalizedDefault({ ru: "Профиль", en: "Account" }),
-					href: "/account/orders",
-					icon: "account",
-				},
-			],
+			items: [],
 		},
 		fields: [
 			{
