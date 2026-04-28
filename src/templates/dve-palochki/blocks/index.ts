@@ -9,6 +9,7 @@ export { dvePalochkiHeaderDefinition } from "./header";
 export { dvePalochkiHeroSliderDefinition } from "./hero-slider";
 export { dvePalochkiInstagramStripDefinition } from "./instagram-strip";
 export { dvePalochkiMobileBottomBarDefinition } from "./mobile-bottom-bar";
+export { dvePalochkiMobileBurgerMenuDefinition } from "./mobile-burger-menu";
 export { dvePalochkiRecommendedStripDefinition } from "./recommended-strip";
 export { dvePalochkiReviewsListDefinition } from "./reviews-list";
 export {
@@ -28,6 +29,7 @@ import { dvePalochkiHeaderDefinition } from "./header";
 import { dvePalochkiHeroSliderDefinition } from "./hero-slider";
 import { dvePalochkiInstagramStripDefinition } from "./instagram-strip";
 import { dvePalochkiMobileBottomBarDefinition } from "./mobile-bottom-bar";
+import { dvePalochkiMobileBurgerMenuDefinition } from "./mobile-burger-menu";
 import { dvePalochkiRecommendedStripDefinition } from "./recommended-strip";
 import { dvePalochkiReviewsListDefinition } from "./reviews-list";
 import {
@@ -44,6 +46,7 @@ export const dvePalochkiBlockDefinitions = [
 	dvePalochkiHeaderDefinition,
 	dvePalochkiFooterDefinition,
 	dvePalochkiMobileBottomBarDefinition,
+	dvePalochkiMobileBurgerMenuDefinition,
 	dvePalochkiHeroSliderDefinition,
 	dvePalochkiCategoryShortcutsDefinition,
 	dvePalochkiSectionHeadingDefinition,

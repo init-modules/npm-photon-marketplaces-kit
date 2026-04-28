@@ -1,22 +1,41 @@
 "use client";
 
 import {
+	COMMERCE_TAXONOMY_CATEGORIES_SOURCE,
+	type CommerceTaxonomyTermView,
+} from "@init/commerce-photon";
+import {
 	definePhotonBlockDefinition,
 	headerActionsSlot,
 	headerUtilitySlot,
 	PhotonLink,
 	type PhotonBlock,
 	usePhotonResolvedSlot,
+	usePhotonValueAtPath,
 } from "@init/photon/public";
-import { Phone, Search, User } from "lucide-react";
+import { Menu, MessageCircle, Phone, Search } from "lucide-react";
+import {
+	type ComponentType,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+} from "react";
 import { MarketplaceCategoryIcon } from "../../../shared/icons/category-icons";
 import type { MarketplaceCategoryIconKey } from "../../shared";
+import { openDvePalochkiBurgerMenu } from "./mobile-burger-menu";
 
 /**
  * Utility-row links and the right-aligned action area (account, cart,
  * etc.) are populated from contributions registered into the
  * `header.utility` and `header.actions` slots. Override per profile via
  * the `contribution-list` inspector fields on this block.
+ *
+ * The category list is sourced from the
+ * `commerce.taxonomy.categories` binding (configured on this block via
+ * `block.bindings.categories`). The `categories` prop below is kept as
+ * a manual override / fallback for environments without taxonomy
+ * hydration (e.g. seed previews).
  */
 type HeaderProps = {
 	brandLabel: string;
@@ -26,6 +45,12 @@ type HeaderProps = {
 	deliveryNote: string;
 	deliveryHighlight: string;
 	primaryPhone: string;
+	whatsappPhone: string;
+	phones: ReadonlyArray<{
+		id: string;
+		phone: string;
+		whatsapp?: boolean;
+	}>;
 	searchPlaceholder: string;
 	categories: ReadonlyArray<{
 		id: string;
@@ -51,143 +76,315 @@ const pickLocalized = (
 
 const HEADER_BLOCK_TYPE = "marketplaces.dve-palochki.header";
 
+const sanitizeTel = (raw: string): string => raw.replace(/[^+\d]/g, "");
+const sanitizeWhatsapp = (raw: string): string => raw.replace(/[^\d]/g, "");
+
+type ContactsDropdownEntry = {
+	id: string;
+	phone: string;
+	whatsapp?: boolean;
+};
+
+const ContactsDropdown = ({
+	primaryPhone,
+	phones,
+	whatsappPhone,
+}: {
+	primaryPhone: string;
+	phones: ReadonlyArray<ContactsDropdownEntry>;
+	whatsappPhone: string;
+}) => {
+	const [open, setOpen] = useState(false);
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		if (!open) return;
+		const handler = (event: MouseEvent) => {
+			if (!containerRef.current) return;
+			if (!containerRef.current.contains(event.target as Node)) {
+				setOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handler);
+		return () => document.removeEventListener("mousedown", handler);
+	}, [open]);
+
+	const hasWhatsapp = whatsappPhone.length > 0;
+	const hasMultiple = phones.length > 1 || (phones.length === 1 && hasWhatsapp);
+
+	if (phones.length === 0 && primaryPhone.length === 0 && !hasWhatsapp) {
+		return null;
+	}
+
+	if (!hasMultiple) {
+		const single = phones[0]?.phone ?? primaryPhone;
+		if (!single) return null;
+		return (
+			<a
+				href={`tel:${sanitizeTel(single)}`}
+				className="inline-flex items-center gap-1.5 font-medium hover:text-[var(--mp-accent,#E32636)]"
+			>
+				<Phone className="h-3.5 w-3.5" /> {single}
+			</a>
+		);
+	}
+
+	const triggerLabel = primaryPhone || phones[0]?.phone || "";
+
+	return (
+		<div ref={containerRef} className="relative">
+			<button
+				type="button"
+				onClick={() => setOpen((v) => !v)}
+				aria-haspopup="menu"
+				aria-expanded={open}
+				className="inline-flex items-center gap-1.5 font-medium hover:text-[var(--mp-accent,#E32636)]"
+			>
+				<Phone className="h-3.5 w-3.5" /> {triggerLabel}
+			</button>
+			{open ? (
+				<div
+					role="menu"
+					className="absolute right-0 top-full z-50 mt-2 min-w-[220px] rounded-md border border-[var(--photon-site-border,#E5E5E5)] bg-[var(--photon-site-surface,#fff)] p-2 shadow-lg"
+				>
+					<ul className="flex flex-col">
+						{phones.map((entry) => (
+							<li key={entry.id}>
+								<a
+									href={`tel:${sanitizeTel(entry.phone)}`}
+									className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[color:rgba(0,0,0,0.04)]"
+								>
+									<Phone className="h-3.5 w-3.5 text-[var(--mp-accent,#E32636)]" />
+									<span>{entry.phone}</span>
+								</a>
+							</li>
+						))}
+						{hasWhatsapp ? (
+							<li>
+								<a
+									href={`https://wa.me/${sanitizeWhatsapp(whatsappPhone)}`}
+									target="_blank"
+									rel="noreferrer"
+									className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-[color:rgba(0,0,0,0.04)]"
+								>
+									<MessageCircle className="h-3.5 w-3.5 text-[#25D366]" />
+									<span>WhatsApp</span>
+								</a>
+							</li>
+						) : null}
+					</ul>
+				</div>
+			) : null}
+		</div>
+	);
+};
+
+const LocaleDropdown = ({
+	localeSwitcher,
+}: {
+	localeSwitcher: HeaderProps["localeSwitcher"];
+}) => {
+	const id = useId();
+	if (localeSwitcher.length === 0) return null;
+	const active = localeSwitcher.find((l) => l.isActive)?.id ?? localeSwitcher[0]?.id;
+	return (
+		<select
+			id={id}
+			value={active}
+			onChange={(event) => {
+				const target = localeSwitcher.find((l) => l.id === event.target.value);
+				if (target) {
+					window.location.href = target.href;
+				}
+			}}
+			className="ml-2 appearance-none rounded border border-[var(--photon-site-border,#E5E5E5)] bg-transparent px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--photon-site-text,#0F0F0F)] hover:bg-[color:rgba(0,0,0,0.04)]"
+			aria-label="Language"
+		>
+			{localeSwitcher.map((l) => (
+				<option key={l.id} value={l.id}>
+					{l.label}
+				</option>
+			))}
+		</select>
+	);
+};
+
 const HeaderBlock = ({ block }: { block: PhotonBlock<HeaderProps> }) => {
 	const props = block.props;
 	const resolvedUtility = usePhotonResolvedSlot(headerUtilitySlot);
 	const resolvedActions = usePhotonResolvedSlot(headerActionsSlot);
 
+	// Bound categories via `block.bindings.categories` -> commerce taxonomy.
+	// Falls back to props.categories so seed previews still work without
+	// a hydrated taxonomy resource.
+	const boundCategories = usePhotonValueAtPath(block.id, "categories") as
+		| readonly CommerceTaxonomyTermView[]
+		| undefined;
+	const resolvedCategories =
+		Array.isArray(boundCategories) && boundCategories.length > 0
+			? boundCategories.map((term) => ({
+					id: term.id,
+					label: term.label,
+					href: term.href,
+					icon: (term.icon ?? "supplements") as MarketplaceCategoryIconKey,
+				}))
+			: props.categories;
+
+	const sentinelRef = useRef<HTMLDivElement | null>(null);
+	const [isStuck, setIsStuck] = useState(false);
+	useEffect(() => {
+		const sentinel = sentinelRef.current;
+		if (!sentinel || typeof IntersectionObserver === "undefined") return;
+		const io = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
+				if (entry) {
+					setIsStuck(!entry.isIntersecting);
+				}
+			},
+			{ rootMargin: "0px", threshold: 0 },
+		);
+		io.observe(sentinel);
+		return () => io.disconnect();
+	}, []);
+
+	const categoriesNav = (
+		<nav className="border-y border-[var(--photon-site-border,#E5E5E5)] bg-[var(--photon-site-surface,#fff)]">
+			<div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+				{resolvedCategories.map((c) => (
+					<PhotonLink
+						key={c.id}
+						href={c.href}
+						className="inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-sm text-[var(--photon-site-text,#0F0F0F)] hover:bg-[color:rgba(0,0,0,0.04)] hover:text-[var(--mp-accent,#E32636)]"
+					>
+						<span className="inline-flex h-7 w-7 items-center justify-center text-[var(--mp-accent,#E32636)]">
+							<MarketplaceCategoryIcon icon={c.icon} className="h-6 w-6" />
+						</span>
+						<span>{c.label}</span>
+					</PhotonLink>
+				))}
+			</div>
+		</nav>
+	);
+
 	return (
 		<header className="bg-[var(--photon-site-surface,#fff)] text-[var(--photon-site-text,#0F0F0F)]">
-			<div className="border-b border-[var(--photon-site-border,#E5E5E5)]">
-				<div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 text-xs">
-					<div className="flex items-center gap-2 text-[var(--photon-site-muted-text,#5C5C5C)]">
-						<svg
-							viewBox="0 0 24 24"
-							className="h-4 w-4 text-[var(--mp-accent,#E32636)]"
-							fill="currentColor"
-							aria-hidden
-						>
-							<path d="M5 13h2l1.5-3.5h7L17 13h2v3h-1a2 2 0 1 1-4 0H10a2 2 0 1 1-4 0H5z" />
-						</svg>
-						<span>
-							{props.deliveryNote}{" "}
-							<strong className="text-[var(--photon-site-text,#0F0F0F)]">
-								{props.deliveryHighlight}
-							</strong>
-						</span>
-					</div>
-					<div className="hidden items-center gap-4 md:flex">
-						{props.primaryPhone ? (
-							<a
-								href={`tel:${props.primaryPhone.replace(/[^+\d]/g, "")}`}
-								className="inline-flex items-center gap-1.5 font-medium hover:text-[var(--mp-accent,#E32636)]"
+			<div className="sticky top-0 z-40 bg-[var(--photon-site-surface,#fff)]">
+				<div className="border-b border-[var(--photon-site-border,#E5E5E5)]">
+					<div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 text-xs">
+						<div className="flex items-center gap-2 text-[var(--photon-site-muted-text,#5C5C5C)]">
+							<svg
+								viewBox="0 0 24 24"
+								className="h-4 w-4 text-[var(--mp-accent,#E32636)]"
+								fill="currentColor"
+								aria-hidden
 							>
-								<Phone className="h-3.5 w-3.5" /> {props.primaryPhone}
-							</a>
-						) : null}
-						<nav className="flex items-center gap-3">
-							{resolvedUtility.map(({ resolved: r }) => (
-								<PhotonLink
-									key={r.contributionId}
-									href={r.href ?? "#"}
-									className="hover:text-[var(--mp-accent,#E32636)]"
-								>
-									{pickLocalized(r.label, r.contributionId)}
-								</PhotonLink>
-							))}
-							{resolvedActions.map(({ resolved: r }) => (
-								<PhotonLink
-									key={r.contributionId}
-									href={r.href ?? "#"}
-									className="inline-flex items-center gap-1 hover:text-[var(--mp-accent,#E32636)]"
-								>
-									<User className="h-3.5 w-3.5" />
-									{pickLocalized(r.label, r.contributionId)}
-								</PhotonLink>
-							))}
-						</nav>
+								<path d="M5 13h2l1.5-3.5h7L17 13h2v3h-1a2 2 0 1 1-4 0H10a2 2 0 1 1-4 0H5z" />
+							</svg>
+							<span>
+								{props.deliveryNote}{" "}
+								<strong className="text-[var(--photon-site-text,#0F0F0F)]">
+									{props.deliveryHighlight}
+								</strong>
+							</span>
+						</div>
+						<div className="hidden items-center gap-4 md:flex">
+							<ContactsDropdown
+								primaryPhone={props.primaryPhone}
+								phones={props.phones}
+								whatsappPhone={props.whatsappPhone}
+							/>
+							<nav className="flex items-center gap-3">
+								{resolvedUtility.map(({ resolved: r }) => (
+									<PhotonLink
+										key={r.contributionId}
+										href={r.href ?? "#"}
+										className="hover:text-[var(--mp-accent,#E32636)]"
+									>
+										{pickLocalized(r.label, r.contributionId)}
+									</PhotonLink>
+								))}
+							</nav>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
-				<PhotonLink
-					href={props.homeHref}
-					className="flex items-center gap-3 text-left"
-				>
-					{props.logoUrl ? (
-						<img
-							src={props.logoUrl}
-							alt={props.brandLabel}
-							className="h-12 w-auto"
-						/>
-					) : null}
-					<span className="hidden flex-col leading-tight text-xs uppercase tracking-wide text-[var(--photon-site-muted-text,#5C5C5C)] md:flex">
-						<span className="text-sm font-bold text-[var(--photon-site-text,#0F0F0F)]">
-							{props.brandLabel}
-						</span>
-						<span>{props.brandTagline}</span>
-					</span>
-				</PhotonLink>
-				{props.localeSwitcher.length > 0 ? (
-					<div className="ml-2 inline-flex overflow-hidden rounded-md border border-[var(--photon-site-border,#E5E5E5)] text-xs font-semibold uppercase">
-						{props.localeSwitcher.map((l) => (
-							<PhotonLink
-								key={l.id}
-								href={l.href}
-								className={[
-									"px-2.5 py-1.5 transition",
-									l.isActive
-										? "bg-[var(--mp-accent,#E32636)] text-white"
-										: "text-[var(--photon-site-muted-text,#5C5C5C)] hover:bg-[color:rgba(0,0,0,0.04)]",
-								].join(" ")}
-							>
-								{l.label}
-							</PhotonLink>
-						))}
-					</div>
-				) : null}
-				<form
-					role="search"
-					className="ml-2 flex flex-1 items-center gap-2"
-					onSubmit={(e) => e.preventDefault()}
-				>
+				<div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
 					<button
 						type="button"
-						className="hidden whitespace-nowrap rounded-md bg-[var(--mp-accent,#E32636)] px-3 py-2 text-sm font-semibold text-white sm:inline-flex"
+						aria-label="Menu"
+						onClick={() => openDvePalochkiBurgerMenu()}
+						className="-ml-1 inline-flex h-9 w-9 items-center justify-center rounded-md text-[var(--photon-site-text,#0F0F0F)] hover:bg-[color:rgba(0,0,0,0.04)] md:hidden"
 					>
-						{props.searchPlaceholder}
+						<Menu className="h-5 w-5" />
 					</button>
-					<label className="flex flex-1 items-center gap-2 rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm">
-						<Search className="h-4 w-4 text-[var(--photon-site-muted-text,#5C5C5C)]" />
-						<input
-							type="search"
-							placeholder={props.searchPlaceholder}
-							className="w-full bg-transparent outline-none"
-						/>
-					</label>
-				</form>
+					<PhotonLink
+						href={props.homeHref}
+						className="flex items-center gap-3 text-left"
+					>
+						{props.logoUrl ? (
+							<img
+								src={props.logoUrl}
+								alt={props.brandLabel}
+								className="h-12 w-auto"
+							/>
+						) : null}
+						<span className="hidden flex-col leading-tight text-xs uppercase tracking-wide text-[var(--photon-site-muted-text,#5C5C5C)] md:flex">
+							<span className="text-sm font-bold text-[var(--photon-site-text,#0F0F0F)]">
+								{props.brandLabel}
+							</span>
+							<span>{props.brandTagline}</span>
+						</span>
+					</PhotonLink>
+					<LocaleDropdown localeSwitcher={props.localeSwitcher} />
+					<form
+						role="search"
+						className="ml-2 flex flex-1 items-center gap-2"
+						onSubmit={(e) => e.preventDefault()}
+					>
+						<button
+							type="button"
+							className="hidden whitespace-nowrap rounded-md bg-[var(--mp-accent,#E32636)] px-3 py-2 text-sm font-semibold text-white sm:inline-flex"
+						>
+							{props.searchPlaceholder}
+						</button>
+						<label className="flex flex-1 items-center gap-2 rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm">
+							<Search className="h-4 w-4 text-[var(--photon-site-muted-text,#5C5C5C)]" />
+							<input
+								type="search"
+								placeholder={props.searchPlaceholder}
+								className="w-full bg-transparent outline-none"
+							/>
+						</label>
+					</form>
+					<nav className="ml-2 hidden items-center gap-2 md:flex">
+						{resolvedActions.map(({ contribution, resolved: r }) => {
+							const Component = contribution.component as ComponentType<
+								Record<string, unknown>
+							>;
+							return (
+								<Component
+									key={r.contributionId}
+									{...(r as unknown as Record<string, unknown>)}
+								/>
+							);
+						})}
+					</nav>
+				</div>
 			</div>
 
-			<nav className="border-y border-[var(--photon-site-border,#E5E5E5)] bg-[var(--photon-site-surface,#fff)]">
-				<div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-					{props.categories.map((c) => (
-						<PhotonLink
-							key={c.id}
-							href={c.href}
-							className="inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-sm text-[var(--photon-site-text,#0F0F0F)] hover:bg-[color:rgba(0,0,0,0.04)] hover:text-[var(--mp-accent,#E32636)]"
-						>
-							<span className="inline-flex h-7 w-7 items-center justify-center text-[var(--mp-accent,#E32636)]">
-								<MarketplaceCategoryIcon
-									icon={c.icon}
-									className="h-6 w-6"
-								/>
-							</span>
-							<span>{c.label}</span>
-						</PhotonLink>
-					))}
-				</div>
-			</nav>
+			<div ref={sentinelRef} className="h-px" aria-hidden />
+
+			{isStuck ? (
+				<>
+					<div className="fixed inset-x-0 top-0 z-50 bg-[var(--photon-site-surface,#fff)] shadow-sm">
+						{categoriesNav}
+					</div>
+					<div className="h-[60px]" aria-hidden />
+				</>
+			) : (
+				categoriesNav
+			)}
 		</header>
 	);
 };
@@ -209,6 +406,8 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 			deliveryNote: "",
 			deliveryHighlight: "",
 			primaryPhone: "",
+			whatsappPhone: "",
+			phones: [],
 			searchPlaceholder: "",
 			categories: [],
 			localeSwitcher: [],
@@ -250,6 +449,26 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 				localization: "shared",
 			},
 			{
+				path: "whatsappPhone",
+				label: "WhatsApp phone",
+				kind: "text",
+				group: "content",
+				localization: "shared",
+			},
+			{
+				path: "phones",
+				label: "Contact phones",
+				kind: "repeater",
+				group: "content",
+				localization: "shared",
+				itemLabelPath: "phone",
+				addLabel: "Add phone",
+				fields: [
+					{ path: "phone", label: "Phone", kind: "text" },
+					{ path: "whatsapp", label: "WhatsApp?", kind: "toggle" },
+				],
+			},
+			{
 				path: "searchPlaceholder",
 				label: "Catalog button label",
 				kind: "text",
@@ -258,7 +477,7 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 			},
 			{
 				path: "categories",
-				label: "Category shortcuts",
+				label: "Category shortcuts (manual fallback)",
 				kind: "repeater",
 				group: "content",
 				localization: "localized",
@@ -327,3 +546,6 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 		],
 	},
 );
+
+export const dvePalochkiHeaderCategoriesBindingSource =
+	COMMERCE_TAXONOMY_CATEGORIES_SOURCE;

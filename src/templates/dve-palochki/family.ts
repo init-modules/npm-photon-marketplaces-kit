@@ -1,3 +1,4 @@
+import { COMMERCE_TAXONOMY_CATEGORIES_SOURCE } from "@init/commerce-photon";
 import type { PhotonBlock } from "@init/photon";
 import {
 	type LocalizedText,
@@ -53,13 +54,29 @@ const headerBlock = (
 		}),
 		deliveryHighlight: "60–90 мин",
 		primaryPhone: scenario.contact.phones[0] ?? "",
+		whatsappPhone: scenario.contact.phones[0] ?? "",
+		phones: scenario.contact.phones.map((phone, i) => ({
+			id: `p${i}`,
+			phone,
+			whatsapp: false,
+		})),
 		searchPlaceholder: t(locale, {
 			ru: "Каталог",
 			kz: "Каталог",
 			en: "Catalog",
 		}),
+		// Manual fallback when the commerce taxonomy resource is not
+		// hydrated (seed previews). When the binding below resolves a
+		// non-empty term list the renderer prefers that.
 		categories: headerCategoryItems(scenario, locale),
 		localeSwitcher: localeSwitcherItems(scenario, locale),
+	},
+	bindings: {
+		categories: {
+			source: COMMERCE_TAXONOMY_CATEGORIES_SOURCE,
+			path: "category",
+			mode: "read",
+		},
 	},
 });
 
@@ -122,6 +139,62 @@ const mobileBottomBarBlock = (
 	module: "marketplaces-photon",
 	type: "marketplaces.dve-palochki.mobile-bottom-bar",
 	props: {},
+});
+
+const mobileBurgerMenuBlock = (
+	scenario: MarketplaceTemplateScenario,
+	locale: MarketplaceLocale,
+): PhotonBlock => ({
+	id: "marketplaces-dve-palochki-mobile-burger-menu",
+	module: "marketplaces-photon",
+	type: "marketplaces.dve-palochki.mobile-burger-menu",
+	props: {
+		navItems: [
+			{
+				id: "home",
+				label: t(locale, { ru: "Главная", kz: "Басты бет", en: "Home" }),
+				href: "/",
+			},
+			{
+				id: "catalog",
+				label: t(locale, { ru: "Каталог", kz: "Каталог", en: "Catalog" }),
+				href: "/archive",
+			},
+			{
+				id: "about",
+				label: t(locale, { ru: "О нас", kz: "Бiз туралы", en: "About" }),
+				href: "/about",
+			},
+			{
+				id: "contacts",
+				label: t(locale, {
+					ru: "Контакты",
+					kz: "Байланыс",
+					en: "Contacts",
+				}),
+				href: "/contacts",
+			},
+		],
+		contactsHeading: t(locale, {
+			ru: "Контакты",
+			kz: "Байланыс",
+			en: "Contacts",
+		}),
+		phones: scenario.contact.phones.map((phone, i) => ({
+			id: `p-${i}`,
+			phone,
+		})),
+		whatsappPhone: "",
+		closeLabel: t(locale, { ru: "Закрыть", kz: "Жабу", en: "Close" }),
+		loginLabel: t(locale, { ru: "Войти", kz: "Кiру", en: "Sign in" }),
+		loginHref: "/auth/login",
+		dashboardLabel: t(locale, {
+			ru: "Личный кабинет",
+			kz: "Жеке кабинет",
+			en: "My account",
+		}),
+		dashboardHref: "/account",
+	},
 });
 
 const heroSliderBlock = (
@@ -791,7 +864,10 @@ export const dvePalochkiTemplateFamily: MarketplaceTemplateFamily = {
 
 	createSiteRegionBlocks(scenario, locale, key) {
 		if (key === "header") {
-			return [headerBlock(scenario, locale)];
+			return [
+				headerBlock(scenario, locale),
+				mobileBurgerMenuBlock(scenario, locale),
+			];
 		}
 		if (key === "footer") {
 			return [footerBlock(scenario, locale), mobileBottomBarBlock(scenario, locale)];
