@@ -372,23 +372,4 @@ export const createMarketplacesProfileDocumentTree = (input: {
  * preset registry consumes this list.
  */
 export const marketplacesProfileStarterPresets: readonly MarketplacesProfileStarterPreset[] =
-	[
-		{
-			id: "marketplaces-dve-palochki",
-			familyId: "dve-palochki",
-			label: 'Sushi delivery (Dve Palochki)',
-			description:
-				"Foodtech storefront with hero slider, category shortcuts, set rails, instagram strip and the dve-palochki dark footer. RU/KZ.",
-			appearance: {
-				background: "#FFFFFF",
-				foreground: "#0F0F0F",
-				accent: "#E32636",
-			},
-			starterRecipe: {
-				type: "marketplaces-profile",
-				familyId: "dve-palochki",
-				scenarioId: "marketplaces-dve-palochki-default",
-				locale: "ru",
-			},
-		},
-	];
+	[];

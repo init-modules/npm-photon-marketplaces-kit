@@ -1,17 +1,6 @@
-import {
-	dvePalochkiBlockDefinitions,
-	dvePalochkiTemplateFamily,
-} from "./dve-palochki";
 import type { MarketplaceTemplateFamily } from "./shared";
 
 export * from "./shared";
-export {
-	dvePalochkiTemplateFamily,
-	dvePalochkiDefaultScenario,
-	dvePalochkiSiteDesignPatch,
-	dvePalochkiSiteBrandPatch,
-	dvePalochkiThemeTokens,
-} from "./dve-palochki";
 
 /**
  * Single source of truth for available template families. Adding
@@ -21,22 +10,22 @@ export {
  * `documents.ts`, `sdk.ts`, and the studio palette pick up the new
  * family from this list.
  */
-export const marketplaceTemplateFamilies = [
-	dvePalochkiTemplateFamily,
-] as const satisfies readonly MarketplaceTemplateFamily[];
+export const marketplaceTemplateFamilies = [] as const satisfies readonly MarketplaceTemplateFamily[];
 
 export type MarketplaceTemplateFamilyId =
-	(typeof marketplaceTemplateFamilies)[number]["id"];
+	(typeof marketplaceTemplateFamilies)[number] extends never
+		? string
+		: (typeof marketplaceTemplateFamilies)[number]["id"];
 
 export const getMarketplaceTemplateFamily = (
 	id: MarketplaceTemplateFamilyId,
 ): MarketplaceTemplateFamily => {
-	const family = marketplaceTemplateFamilies.find((f) => f.id === id);
+	const family = marketplaceTemplateFamilies.find(
+		(f: MarketplaceTemplateFamily) => f.id === id,
+	);
 	if (!family) {
 		throw new Error(
-			`Unknown marketplace template family: ${id}. Registered families: ${marketplaceTemplateFamilies
-				.map((f) => f.id)
-				.join(", ")}`,
+			`Unknown marketplace template family: ${id}. No families are registered.`,
 		);
 	}
 	return family;
@@ -46,6 +35,4 @@ export const getMarketplaceTemplateFamily = (
  * Combined block definitions across all families. Used by
  * `module.tsx` to register everything in one shot.
  */
-export const marketplaceBlockDefinitions = [
-	...dvePalochkiBlockDefinitions,
-] as const;
+export const marketplaceBlockDefinitions = [] as const;
