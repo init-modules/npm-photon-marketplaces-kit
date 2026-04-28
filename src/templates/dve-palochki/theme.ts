@@ -65,48 +65,57 @@ export const dvePalochkiThemeTokens = {
 export type DvePalochkiThemeTokens = typeof dvePalochkiThemeTokens;
 
 /**
- * Patch fragment placed under `site.settings.design`. Site frame
- * and block components read these via `usePhotonStore`.
+ * Patch fragment placed under `site.settings.design`. Top-level keys
+ * match the schema consumed by `resolvePhotonPublicSiteDesignSettings`
+ * (photon-foundation/photon) which projects them to CSS variables on
+ * the site surface.
+ *
+ * Marketplace-specific CSS vars (`--mp-*`) are injected separately
+ * via `dvePalochkiSiteFrameTokens` (rendered as an inline <style>
+ * block by the kit's site-frame chrome) so they don't have to fight
+ * the photon design schema.
  */
 export const dvePalochkiSiteDesignPatch = {
 	presetId: dvePalochkiThemeTokens.id,
-	tokens: {
-		"--photon-site-accent": dvePalochkiThemeTokens.colors.accent,
-		"--photon-site-accent-foreground":
-			dvePalochkiThemeTokens.colors.accentForeground,
-		"--photon-site-surface": dvePalochkiThemeTokens.colors.surface,
-		"--photon-site-surface-muted": dvePalochkiThemeTokens.colors.surfaceMuted,
-		"--photon-site-text": dvePalochkiThemeTokens.colors.text,
-		"--photon-site-muted-text": dvePalochkiThemeTokens.colors.textMuted,
-		"--photon-site-border": dvePalochkiThemeTokens.colors.border,
-		"--mp-accent": dvePalochkiThemeTokens.colors.accent,
-		"--mp-card-bg": dvePalochkiThemeTokens.colors.cardBackground,
-		"--mp-radius-2xl": dvePalochkiThemeTokens.radius["2xl"],
-		"--mp-primary-50": dvePalochkiThemeTokens.primaryScale["50"],
-		"--mp-primary-100": dvePalochkiThemeTokens.primaryScale["100"],
-		"--mp-primary-200": dvePalochkiThemeTokens.primaryScale["200"],
-		"--mp-primary-300": dvePalochkiThemeTokens.primaryScale["300"],
-		"--mp-primary-400": dvePalochkiThemeTokens.primaryScale["400"],
-		"--mp-primary-500": dvePalochkiThemeTokens.primaryScale["500"],
-		"--mp-primary-600": dvePalochkiThemeTokens.primaryScale["600"],
-		"--mp-primary-700": dvePalochkiThemeTokens.primaryScale["700"],
-		"--mp-primary-800": dvePalochkiThemeTokens.primaryScale["800"],
-		"--mp-primary-900": dvePalochkiThemeTokens.primaryScale["900"],
-		"--mp-secondary-50": dvePalochkiThemeTokens.secondaryScale["50"],
-		"--mp-secondary-100": dvePalochkiThemeTokens.secondaryScale["100"],
-		"--mp-secondary-200": dvePalochkiThemeTokens.secondaryScale["200"],
-		"--mp-secondary-300": dvePalochkiThemeTokens.secondaryScale["300"],
-		"--mp-secondary-400": dvePalochkiThemeTokens.secondaryScale["400"],
-		"--mp-secondary-500": dvePalochkiThemeTokens.secondaryScale["500"],
-		"--mp-secondary-600": dvePalochkiThemeTokens.secondaryScale["600"],
-		"--mp-secondary-700": dvePalochkiThemeTokens.secondaryScale["700"],
-		"--mp-secondary-800": dvePalochkiThemeTokens.secondaryScale["800"],
-		"--mp-secondary-900": dvePalochkiThemeTokens.secondaryScale["900"],
-		"--mp-footer-bg": dvePalochkiThemeTokens.colors.footerBackground,
-		"--mp-footer-fg": dvePalochkiThemeTokens.colors.footerForeground,
-		"--mp-footer-heading": dvePalochkiThemeTokens.colors.footerHeading,
-	},
+	bodyFontFamily: dvePalochkiThemeTokens.font.body,
+	headingFontFamily: dvePalochkiThemeTokens.font.display,
+	backgroundColor: dvePalochkiThemeTokens.colors.surface,
+	surfaceColor: dvePalochkiThemeTokens.colors.surface,
+	textColor: dvePalochkiThemeTokens.colors.text,
+	mutedTextColor: dvePalochkiThemeTokens.colors.textMuted,
+	accentColor: dvePalochkiThemeTokens.colors.accent,
+	borderColor: dvePalochkiThemeTokens.colors.border,
+	radius: dvePalochkiThemeTokens.radius.lg,
 } as const;
+
+/**
+ * Marketplace-specific CSS variables (`--mp-*`) emitted as a string
+ * suitable for `<style>{`:root { ... }`}</style>`. Kept separate from
+ * `dvePalochkiSiteDesignPatch` because photon's design-settings
+ * schema only projects a fixed set of top-level keys.
+ */
+export const dvePalochkiSiteFrameTokens = `:root {
+	--mp-accent: ${dvePalochkiThemeTokens.colors.accent};
+	--mp-card-bg: ${dvePalochkiThemeTokens.colors.cardBackground};
+	--mp-radius-2xl: ${dvePalochkiThemeTokens.radius["2xl"]};
+	--mp-primary-50: ${dvePalochkiThemeTokens.primaryScale["50"]};
+	--mp-primary-100: ${dvePalochkiThemeTokens.primaryScale["100"]};
+	--mp-primary-200: ${dvePalochkiThemeTokens.primaryScale["200"]};
+	--mp-primary-300: ${dvePalochkiThemeTokens.primaryScale["300"]};
+	--mp-primary-400: ${dvePalochkiThemeTokens.primaryScale["400"]};
+	--mp-primary-500: ${dvePalochkiThemeTokens.primaryScale["500"]};
+	--mp-primary-600: ${dvePalochkiThemeTokens.primaryScale["600"]};
+	--mp-primary-700: ${dvePalochkiThemeTokens.primaryScale["700"]};
+	--mp-primary-800: ${dvePalochkiThemeTokens.primaryScale["800"]};
+	--mp-primary-900: ${dvePalochkiThemeTokens.primaryScale["900"]};
+	--mp-secondary-50: ${dvePalochkiThemeTokens.secondaryScale["50"]};
+	--mp-secondary-500: ${dvePalochkiThemeTokens.secondaryScale["500"]};
+	--mp-secondary-700: ${dvePalochkiThemeTokens.secondaryScale["700"]};
+	--mp-secondary-900: ${dvePalochkiThemeTokens.secondaryScale["900"]};
+	--mp-footer-bg: ${dvePalochkiThemeTokens.colors.footerBackground};
+	--mp-footer-fg: ${dvePalochkiThemeTokens.colors.footerForeground};
+	--mp-footer-heading: ${dvePalochkiThemeTokens.colors.footerHeading};
+}`;
 
 /**
  * Brand-level patch placed under `site.settings.brand`. Consumed by
