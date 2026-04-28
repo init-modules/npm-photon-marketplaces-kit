@@ -5,10 +5,10 @@ ships a registry of self-contained template families (foodtech,
 dark-store, local commerce) that, when applied as a profile starter
 preset, produce a complete website on the Photon runtime.
 
-The first family is **`dve-palochki`** — sushi/pizza delivery, RU/KZ.
-A profile created from `marketplaces-dve-palochki` preset renders a
-site visually equivalent to https://dve-palochky.kz/ but on the
-Photon framework (no MUI, no Swiper, no `@init-kz/*`, no GSAP).
+The kit currently ships an empty family registry. The shape, the
+namespacing contract, and the profile starter preset wiring are in
+place; future families can be added under `src/templates/<family-id>/`
+without further plumbing changes.
 
 ## Architecture
 
@@ -35,7 +35,7 @@ See `docs/GLOSSARY.md`.
 
 ## Intentional decisions
 
-The first-release scope decisions (no facets, dumb-iframe maps,
-CSS-snap carousels, etc.) are recorded in
+Cross-family conventions (source-export packaging, block-type
+namespacing, site-frame ownership rules) are recorded in
 `demo/.agents/context/THATS_THE_WAY_IT_SHOULD_BE.md`, section
-"Marketplaces kit — first-release scope decisions".
+"Marketplaces kit — registry conventions".

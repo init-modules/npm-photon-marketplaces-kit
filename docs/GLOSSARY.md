@@ -2,7 +2,7 @@
 
 | Term | Meaning |
 |------|---------|
-| **Marketplace template family** | A complete set of factories + scenarios + site-frame for one marketplace look (e.g. `dve-palochki`). One family = one storefront aesthetic. Lives in `src/templates/<family-id>/`. Implements `MarketplaceTemplateFamily`. |
+| **Marketplace template family** | A complete set of factories + scenarios + site-frame for one marketplace look. One family = one storefront aesthetic. Lives in `src/templates/<family-id>/`. Implements `MarketplaceTemplateFamily`. |
 | **Marketplace template scenario** | A content payload bound to one family + locale set: brand, contacts, hero slides, category icons, about copy, legal links, etc. Pure data, no behavior. |
 | **Marketplace block** | A Photon block specific to one family. Type is always `marketplaces.<family-id>.<block-id>` to keep block registries collision-free across kits. |
 | **Marketplace site-frame extension** | A `PhotonSiteFrameExtension` produced from a family + scenario + locale. Owns header sub-nav (categories), footer columns, mobile bottom-bar. Does **not** own the cart icon (that comes from `@init/commerce-photon`). |
@@ -12,8 +12,8 @@
 
 ## Naming convention
 
-- Block type: `marketplaces.<family>.<block>` — e.g. `marketplaces.dve-palochki.hero-slider`.
-- Block component name: `Marketplace<Family><Block>Block` — e.g. `MarketplaceDvePalochkiHeroSliderBlock`.
-- Scenario id: `marketplaces-<family>-<scenario>` — e.g. `marketplaces-dve-palochki-default`.
-- Profile starter preset id: `marketplaces-<family>` (one per family) — e.g. `marketplaces-dve-palochki`.
-- Site-frame extension id: `marketplaces.<family>` — e.g. `marketplaces.dve-palochki`.
+- Block type: `marketplaces.<family>.<block>` — e.g. `marketplaces.foodtech.hero-slider`.
+- Block component name: `Marketplace<Family><Block>Block` — e.g. `MarketplaceFoodtechHeroSliderBlock`.
+- Scenario id: `marketplaces-<family>-<scenario>` — e.g. `marketplaces-foodtech-default`.
+- Profile starter preset id: `marketplaces-<family>` (one per family) — e.g. `marketplaces-foodtech`.
+- Site-frame extension id: `marketplaces.<family>` — e.g. `marketplaces.foodtech`.
