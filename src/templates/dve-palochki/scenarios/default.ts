@@ -70,7 +70,7 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
 		slides: [
 			{
 				id: "halal",
-				imageUrl: "/marketplaces/dve-palochki/hero-halal.jpg",
+				imageUrl: "/marketplaces/dve-palochki/hero-halal.svg",
 				title: {
 					ru: "HALAL",
 					kz: "HALAL",
@@ -83,7 +83,7 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
 			},
 			{
 				id: "sets",
-				imageUrl: "/marketplaces/dve-palochki/hero-sets.jpg",
+				imageUrl: "/marketplaces/dve-palochki/hero-sets.svg",
 				title: {
 					ru: "Сеты для большой компании",
 					kz: "Үлкен компанияға арналған сеттер",
@@ -96,7 +96,7 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
 			},
 			{
 				id: "delivery",
-				imageUrl: "/marketplaces/dve-palochki/hero-delivery.jpg",
+				imageUrl: "/marketplaces/dve-palochki/hero-delivery.svg",
 				title: {
 					ru: "Доставим за 60–90 минут",
 					kz: "60–90 минутта жеткiземiз",
@@ -173,12 +173,12 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
 		gallery: [
 			{
 				id: "g1",
-				imageUrl: "/marketplaces/dve-palochki/about-1.jpg",
+				imageUrl: "/marketplaces/dve-palochki/about-1.svg",
 				alt: { ru: "Сеты крупным планом", kz: "Сеттер" },
 			},
 			{
 				id: "g2",
-				imageUrl: "/marketplaces/dve-palochki/about-2.jpg",
+				imageUrl: "/marketplaces/dve-palochki/about-2.svg",
 				alt: { ru: "Подача нигири", kz: "Нигири" },
 			},
 		],
@@ -258,22 +258,22 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
 		tiles: [
 			{
 				id: "i1",
-				imageUrl: "/marketplaces/dve-palochki/insta-1.jpg",
+				imageUrl: "/marketplaces/dve-palochki/insta-1.svg",
 				href: "https://instagram.com/dve_palochki.kz",
 			},
 			{
 				id: "i2",
-				imageUrl: "/marketplaces/dve-palochki/insta-2.jpg",
+				imageUrl: "/marketplaces/dve-palochki/insta-2.svg",
 				href: "https://instagram.com/dve_palochki.kz",
 			},
 			{
 				id: "i3",
-				imageUrl: "/marketplaces/dve-palochki/insta-3.jpg",
+				imageUrl: "/marketplaces/dve-palochki/insta-3.svg",
 				href: "https://instagram.com/dve_palochki.kz",
 			},
 			{
 				id: "i4",
-				imageUrl: "/marketplaces/dve-palochki/insta-4.jpg",
+				imageUrl: "/marketplaces/dve-palochki/insta-4.svg",
 				href: "https://instagram.com/dve_palochki.kz",
 			},
 		],
