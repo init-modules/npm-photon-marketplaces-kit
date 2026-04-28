@@ -1,7 +1,7 @@
 import {
 	definePhotonBlockDefinition,
 	type PhotonBlock,
-} from "@init/photon/public";
+} from "@init/photon";
 
 type Props = {
 	areaTitle: string;
