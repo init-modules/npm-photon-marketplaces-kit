@@ -9,6 +9,7 @@ export {
 	dvePalochkiTemplateFamily,
 	dvePalochkiDefaultScenario,
 	dvePalochkiSiteDesignPatch,
+	dvePalochkiSiteBrandPatch,
 	dvePalochkiThemeTokens,
 } from "./dve-palochki";
 

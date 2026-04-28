@@ -8,7 +8,7 @@ import {
 } from "../shared";
 import { dvePalochkiBlockTypes } from "./blocks";
 import { dvePalochkiDefaultScenario } from "./scenarios/default";
-import { dvePalochkiSiteDesignPatch } from "./theme";
+import { dvePalochkiSiteBrandPatch, dvePalochkiSiteDesignPatch } from "./theme";
 
 const t = (l: MarketplaceLocale, value: LocalizedText) => localized(value, l);
 
@@ -34,41 +34,6 @@ const localeSwitcherItems = (
 		isActive: l === locale,
 	}));
 
-const supportLinks = (
-	scenario: MarketplaceTemplateScenario,
-	locale: MarketplaceLocale,
-) =>
-	[
-		{
-			id: "about",
-			label: t(locale, { ru: "О нас", kz: "Бiз туралы", en: "About" }),
-			href: "/about",
-		},
-		{
-			id: "reviews",
-			label: t(locale, { ru: "Отзывы", kz: "Пiкiрлер", en: "Reviews" }),
-			href: "/reviews",
-		},
-		{
-			id: "payment",
-			label: t(locale, {
-				ru: "Условия оплаты",
-				kz: "Төлем шарттары",
-				en: "Payment & delivery",
-			}),
-			href: "/payment-and-delivery",
-		},
-		{
-			id: "contacts",
-			label: t(locale, {
-				ru: "Контакты",
-				kz: "Байланыс",
-				en: "Contacts",
-			}),
-			href: "/contacts",
-		},
-	] satisfies Array<{ id: string; label: string; href: string }>;
-
 const headerBlock = (
 	scenario: MarketplaceTemplateScenario,
 	locale: MarketplaceLocale,
@@ -93,20 +58,7 @@ const headerBlock = (
 			kz: "Каталог",
 			en: "Catalog",
 		}),
-		accountLabel: t(locale, {
-			ru: "Личный кабинет",
-			kz: "Жеке кабинет",
-			en: "Account",
-		}),
-		accountHref: "/account/orders",
-		cartLabel: t(locale, {
-			ru: "Моя корзина",
-			kz: "Себет",
-			en: "Cart",
-		}),
-		cartHref: "/cart",
 		categories: headerCategoryItems(scenario, locale),
-		supportLinks: supportLinks(scenario, locale),
 		localeSwitcher: localeSwitcherItems(scenario, locale),
 	},
 });
@@ -149,11 +101,6 @@ const footerBlock = (
 			label: t(locale, { ru: "Подробнее", kz: "Толығырақ", en: "Read more" }),
 			href: "/about",
 		},
-		legalLinks: scenario.legalLinks.map((l) => ({
-			id: l.id,
-			label: t(locale, l.label),
-			href: l.route,
-		})),
 		copyright: t(locale, {
 			ru: '© 2014 - 2026 "Две палочки". Все права защищены.',
 			kz: '© 2014 - 2026 "Екi таяқша". Барлық құқықтар қорғалған.',
@@ -168,34 +115,13 @@ const footerBlock = (
 });
 
 const mobileBottomBarBlock = (
-	scenario: MarketplaceTemplateScenario,
-	locale: MarketplaceLocale,
+	_scenario: MarketplaceTemplateScenario,
+	_locale: MarketplaceLocale,
 ): PhotonBlock => ({
 	id: "marketplaces-dve-palochki-mobile-bottom-bar",
 	module: "marketplaces-photon",
 	type: "marketplaces.dve-palochki.mobile-bottom-bar",
-	props: {
-		items: [
-			{
-				id: "menu",
-				label: t(locale, { ru: "Меню", kz: "Мәзiр", en: "Menu" }),
-				href: "/archive",
-				icon: "menu",
-			},
-			{
-				id: "cart",
-				label: t(locale, { ru: "Корзина", kz: "Себет", en: "Cart" }),
-				href: "/cart",
-				icon: "cart",
-			},
-			{
-				id: "account",
-				label: t(locale, { ru: "Профиль", kz: "Профиль", en: "Account" }),
-				href: "/account/orders",
-				icon: "account",
-			},
-		],
-	},
+	props: {},
 });
 
 const heroSliderBlock = (
@@ -291,7 +217,10 @@ const recommendedRail = (
 		: []),
 	productGridBlock(`${id}-grid`, categorySlug, locale, {
 		columns: 5,
-		layout: "rail",
+		layout: "swiper",
+		cardVariant: "marketplace",
+		surface: "beige",
+		cardActions: "link-only",
 	}),
 ];
 
@@ -408,6 +337,22 @@ const contactsFormBlock = (
 	},
 });
 
+const deliverySquareBlock = (
+	scenario: MarketplaceTemplateScenario,
+	locale: MarketplaceLocale,
+): PhotonBlock => ({
+	id: "marketplaces-dve-palochki-delivery-square",
+	module: "marketplaces-photon",
+	type: "marketplaces.dve-palochki.delivery-square",
+	props: {
+		areaTitle: t(locale, scenario.delivery.areaTitle),
+		streetTop: scenario.delivery.streetTop,
+		streetBottom: scenario.delivery.streetBottom,
+		streetLeft: scenario.delivery.streetLeft,
+		streetRight: scenario.delivery.streetRight,
+	},
+});
+
 const deliveryConditionsBlock = (
 	scenario: MarketplaceTemplateScenario,
 	locale: MarketplaceLocale,
@@ -416,11 +361,6 @@ const deliveryConditionsBlock = (
 	module: "marketplaces-photon",
 	type: "marketplaces.dve-palochki.delivery-conditions",
 	props: {
-		areaTitle: t(locale, scenario.delivery.areaTitle),
-		streetTop: scenario.delivery.streetTop,
-		streetBottom: scenario.delivery.streetBottom,
-		streetLeft: scenario.delivery.streetLeft,
-		streetRight: scenario.delivery.streetRight,
 		pickupNote: t(locale, scenario.delivery.pickupPoint),
 		minOrderNote: t(locale, scenario.delivery.minOrderText),
 		paymentBlocks: scenario.delivery.paymentBlocks.map((pb, i) => ({
@@ -806,9 +746,16 @@ export const dvePalochkiTemplateFamily: MarketplaceTemplateFamily = {
 			case "about":
 				return [aboutSectionBlock(scenario, locale)];
 			case "contacts":
-				return [contactsMapBlock(scenario, locale), contactsFormBlock(scenario, locale)];
+				return [
+					contactsMapBlock(scenario, locale),
+					contactsFormBlock(scenario, locale),
+					deliverySquareBlock(scenario, locale),
+				];
 			case "payment-and-delivery":
-				return [deliveryConditionsBlock(scenario, locale)];
+				return [
+					deliverySquareBlock(scenario, locale),
+					deliveryConditionsBlock(scenario, locale),
+				];
 			case "privacy":
 				return [
 					sectionHeadingBlock(
@@ -855,6 +802,7 @@ export const dvePalochkiTemplateFamily: MarketplaceTemplateFamily = {
 	createSiteSettingsPatch(scenario, locale) {
 		return {
 			design: dvePalochkiSiteDesignPatch,
+			brand: dvePalochkiSiteBrandPatch,
 			marketplaces: {
 				familyId: "dve-palochki",
 				scenarioId: scenario.id,

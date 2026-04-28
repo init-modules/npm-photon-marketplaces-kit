@@ -123,6 +123,18 @@ export const dvePalochkiNotFoundScreenDefinition =
 		fields: [
 			{ path: "title", label: "Title", kind: "text", localization: "localized" },
 			{ path: "body", label: "Body", kind: "textarea", localization: "localized" },
+			{
+				path: "primaryLabel",
+				label: "Primary CTA label",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "primaryHref",
+				label: "Primary CTA href",
+				kind: "url",
+				localization: "shared",
+			},
 		],
 	});
 

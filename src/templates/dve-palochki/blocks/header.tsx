@@ -2,13 +2,22 @@
 
 import {
 	definePhotonBlockDefinition,
+	headerActionsSlot,
+	headerUtilitySlot,
 	PhotonLink,
 	type PhotonBlock,
+	usePhotonResolvedSlot,
 } from "@init/photon/public";
 import { Phone, Search, User } from "lucide-react";
 import { MarketplaceCategoryIcon } from "../../../shared/icons/category-icons";
 import type { MarketplaceCategoryIconKey } from "../../shared";
 
+/**
+ * Utility-row links and the right-aligned action area (account, cart,
+ * etc.) are populated from contributions registered into the
+ * `header.utility` and `header.actions` slots. Override per profile via
+ * the `contribution-list` inspector fields on this block.
+ */
 type HeaderProps = {
 	brandLabel: string;
 	brandTagline: string;
@@ -18,20 +27,11 @@ type HeaderProps = {
 	deliveryHighlight: string;
 	primaryPhone: string;
 	searchPlaceholder: string;
-	accountLabel: string;
-	accountHref: string;
-	cartLabel: string;
-	cartHref: string;
 	categories: ReadonlyArray<{
 		id: string;
 		label: string;
 		href: string;
 		icon: MarketplaceCategoryIconKey;
-	}>;
-	supportLinks: ReadonlyArray<{
-		id: string;
-		label: string;
-		href: string;
 	}>;
 	localeSwitcher: ReadonlyArray<{
 		id: string;
@@ -41,10 +41,20 @@ type HeaderProps = {
 	}>;
 };
 
+const pickLocalized = (
+	value: Record<string, string> | undefined,
+	fallback: string,
+): string => {
+	if (!value) return fallback;
+	return value.en ?? value.ru ?? Object.values(value)[0] ?? fallback;
+};
+
 const HEADER_BLOCK_TYPE = "marketplaces.dve-palochki.header";
 
 const HeaderBlock = ({ block }: { block: PhotonBlock<HeaderProps> }) => {
 	const props = block.props;
+	const resolvedUtility = usePhotonResolvedSlot(headerUtilitySlot);
+	const resolvedActions = usePhotonResolvedSlot(headerActionsSlot);
 
 	return (
 		<header className="bg-[var(--photon-site-surface,#fff)] text-[var(--photon-site-text,#0F0F0F)]">
@@ -76,21 +86,25 @@ const HeaderBlock = ({ block }: { block: PhotonBlock<HeaderProps> }) => {
 							</a>
 						) : null}
 						<nav className="flex items-center gap-3">
-							{props.supportLinks.map((l) => (
+							{resolvedUtility.map(({ resolved: r }) => (
 								<PhotonLink
-									key={l.id}
-									href={l.href}
+									key={r.contributionId}
+									href={r.href ?? "#"}
 									className="hover:text-[var(--mp-accent,#E32636)]"
 								>
-									{l.label}
+									{pickLocalized(r.label, r.contributionId)}
 								</PhotonLink>
 							))}
-							<PhotonLink
-								href={props.accountHref}
-								className="inline-flex items-center gap-1 hover:text-[var(--mp-accent,#E32636)]"
-							>
-								<User className="h-3.5 w-3.5" /> {props.accountLabel}
-							</PhotonLink>
+							{resolvedActions.map(({ resolved: r }) => (
+								<PhotonLink
+									key={r.contributionId}
+									href={r.href ?? "#"}
+									className="inline-flex items-center gap-1 hover:text-[var(--mp-accent,#E32636)]"
+								>
+									<User className="h-3.5 w-3.5" />
+									{pickLocalized(r.label, r.contributionId)}
+								</PhotonLink>
+							))}
 						</nav>
 					</div>
 				</div>
@@ -196,12 +210,7 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 			deliveryHighlight: "",
 			primaryPhone: "",
 			searchPlaceholder: "",
-			accountLabel: "",
-			accountHref: "",
-			cartLabel: "",
-			cartHref: "",
 			categories: [],
-			supportLinks: [],
 			localeSwitcher: [],
 		},
 		fields: [
@@ -288,22 +297,18 @@ export const dvePalochkiHeaderDefinition = definePhotonBlockDefinition<HeaderPro
 				],
 			},
 			{
-				path: "supportLinks",
-				label: "Support links (utility row)",
-				kind: "repeater",
+				path: "__utility_contributions",
+				label: "Utility-row links",
+				kind: "contribution-list",
+				slotId: "header.utility",
 				group: "content",
-				localization: "localized",
-				itemLabelPath: "label",
-				addLabel: "Add support link",
-				fields: [
-					{ path: "label", label: "Label", kind: "text" },
-					{
-						path: "href",
-						label: "Href",
-						kind: "url",
-						localization: "shared",
-					},
-				],
+			},
+			{
+				path: "__action_contributions",
+				label: "Header actions (cart, account, etc.)",
+				kind: "contribution-list",
+				slotId: "header.actions",
+				group: "content",
 			},
 			{
 				path: "localeSwitcher",

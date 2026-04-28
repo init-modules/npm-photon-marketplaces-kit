@@ -2,33 +2,52 @@
 
 import {
 	definePhotonBlockDefinition,
+	footerLegalSlot,
 	PhotonLink,
 	type PhotonBlock,
+	usePhotonResolvedSlot,
 } from "@init/photon/public";
-import { Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 type FooterLink = { id: string; label: string; href: string };
 
+/**
+ * Legal links come from contributions registered into `footer.legal`
+ * (e.g. marketplace.footer.privacy from `photon-marketplaces-kit`).
+ * Override per-profile via the `contribution-list` inspector field.
+ */
 type FooterProps = {
 	brandLabel: string;
 	brandDescription: string;
 	logoUrl: string;
+	ctaLabel: string;
+	ctaHref: string;
 	categoriesTitle: string;
 	categories: FooterLink[];
 	contactsTitle: string;
 	phones: { id: string; phone: string }[];
 	address: string;
 	cta: { label: string; href: string } | null;
-	legalLinks: FooterLink[];
 	copyright: string;
 	credit: string;
 	creditHref: string;
+	creditLogoUrl: string;
+	creditLogoAlt: string;
+};
+
+const pickLocalized = (
+	value: Record<string, string> | undefined,
+	fallback: string,
+): string => {
+	if (!value) return fallback;
+	return value.en ?? value.ru ?? Object.values(value)[0] ?? fallback;
 };
 
 const FOOTER_BLOCK_TYPE = "marketplaces.dve-palochki.footer";
 
 const FooterBlock = ({ block }: { block: PhotonBlock<FooterProps> }) => {
 	const p = block.props;
+	const resolvedLegal = usePhotonResolvedSlot(footerLegalSlot);
 
 	return (
 		<footer className="bg-[var(--mp-footer-bg,#0A0A0A)] text-[var(--mp-footer-fg,#A1A1A1)]">
@@ -42,40 +61,22 @@ const FooterBlock = ({ block }: { block: PhotonBlock<FooterProps> }) => {
 						/>
 					) : null}
 					<p className="max-w-md text-sm leading-relaxed">{p.brandDescription}</p>
-					{p.cta ? (
+					{p.ctaLabel && p.ctaHref ? (
 						<PhotonLink
-							href={p.cta.href}
-							className="inline-flex items-center justify-center rounded-md border border-[var(--mp-accent,#E32636)] px-4 py-2 text-sm font-semibold text-[var(--mp-accent,#E32636)] transition hover:bg-[var(--mp-accent,#E32636)] hover:text-white"
+							href={p.ctaHref}
+							className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm hover:bg-white hover:text-[var(--mp-footer-bg)]"
 						>
-							{p.cta.label}
+							{p.ctaLabel}
 						</PhotonLink>
 					) : null}
 				</div>
 
-				<div>
+				<div className="md:col-span-2">
 					<h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[var(--mp-footer-heading,#fff)]">
 						{p.categoriesTitle}
 					</h4>
-					<ul className="space-y-2 text-sm">
-						{p.categories.slice(0, Math.ceil(p.categories.length / 2)).map((c) => (
-							<li key={c.id}>
-								<PhotonLink
-									href={c.href}
-									className="hover:text-[var(--mp-accent,#E32636)]"
-								>
-									{c.label}
-								</PhotonLink>
-							</li>
-						))}
-					</ul>
-				</div>
-
-				<div>
-					<h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-transparent">
-						.
-					</h4>
-					<ul className="space-y-2 text-sm">
-						{p.categories.slice(Math.ceil(p.categories.length / 2)).map((c) => (
+					<ul className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+						{p.categories.slice(0, 12).map((c) => (
 							<li key={c.id}>
 								<PhotonLink
 									href={c.href}
@@ -97,13 +98,19 @@ const FooterBlock = ({ block }: { block: PhotonBlock<FooterProps> }) => {
 							<li key={ph.id}>
 								<a
 									href={`tel:${ph.phone.replace(/[^+\d]/g, "")}`}
-									className="inline-flex items-center gap-2 hover:text-[var(--mp-accent,#E32636)]"
+									className="flex items-center gap-2 hover:text-[var(--mp-accent,#E32636)]"
 								>
-									<Phone className="h-3.5 w-3.5" /> {ph.phone}
+									<Phone className="h-4 w-4 shrink-0" />
+									<span>{ph.phone}</span>
 								</a>
 							</li>
 						))}
-						<li className="pt-2 text-[color:rgba(255,255,255,0.7)]">{p.address}</li>
+						{p.address ? (
+							<li className="flex items-start gap-2 pt-2 text-[color:rgba(255,255,255,0.7)]">
+								<MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+								<span>{p.address}</span>
+							</li>
+						) : null}
 					</ul>
 				</div>
 			</div>
@@ -113,13 +120,13 @@ const FooterBlock = ({ block }: { block: PhotonBlock<FooterProps> }) => {
 					<div>
 						<div className="text-[color:rgba(255,255,255,0.85)]">{p.copyright}</div>
 						<ul className="mt-1 flex flex-wrap gap-3 text-[color:rgba(255,255,255,0.6)]">
-							{p.legalLinks.map((l) => (
-								<li key={l.id}>
+							{resolvedLegal.map(({ resolved: r }) => (
+								<li key={r.contributionId}>
 									<PhotonLink
-										href={l.href}
+										href={r.href ?? "#"}
 										className="hover:text-[var(--mp-accent,#E32636)]"
 									>
-										{l.label}
+										{pickLocalized(r.label, r.contributionId)}
 									</PhotonLink>
 								</li>
 							))}
@@ -127,11 +134,18 @@ const FooterBlock = ({ block }: { block: PhotonBlock<FooterProps> }) => {
 					</div>
 					<a
 						href={p.creditHref}
-						className="text-[color:rgba(255,255,255,0.6)] hover:text-white"
+						className="inline-flex items-center gap-2 text-[color:rgba(255,255,255,0.6)] hover:text-white"
 						target="_blank"
 						rel="noreferrer"
 					>
-						{p.credit}
+						{p.creditLogoUrl ? (
+							<img
+								src={p.creditLogoUrl}
+								alt={p.creditLogoAlt}
+								className="h-5 w-auto opacity-60"
+							/>
+						) : null}
+						<span>{p.credit}</span>
 					</a>
 				</div>
 			</div>
@@ -152,16 +166,19 @@ export const dvePalochkiFooterDefinition = definePhotonBlockDefinition<FooterPro
 			brandLabel: "",
 			brandDescription: "",
 			logoUrl: "",
+			ctaLabel: "",
+			ctaHref: "",
 			categoriesTitle: "",
 			categories: [],
 			contactsTitle: "",
 			phones: [],
 			address: "",
 			cta: null,
-			legalLinks: [],
 			copyright: "",
 			credit: "",
 			creditHref: "",
+			creditLogoUrl: "",
+			creditLogoAlt: "",
 		},
 		fields: [
 			{
@@ -170,6 +187,20 @@ export const dvePalochkiFooterDefinition = definePhotonBlockDefinition<FooterPro
 				kind: "textarea",
 				group: "content",
 				localization: "localized",
+			},
+			{
+				path: "ctaLabel",
+				label: "CTA label",
+				kind: "text",
+				group: "content",
+				localization: "localized",
+			},
+			{
+				path: "ctaHref",
+				label: "CTA href",
+				kind: "url",
+				group: "content",
+				localization: "shared",
 			},
 			{
 				path: "categories",
@@ -202,17 +233,11 @@ export const dvePalochkiFooterDefinition = definePhotonBlockDefinition<FooterPro
 				localization: "localized",
 			},
 			{
-				path: "legalLinks",
+				path: "__legal_contributions",
 				label: "Legal links",
-				kind: "repeater",
+				kind: "contribution-list",
+				slotId: "footer.legal",
 				group: "content",
-				localization: "localized",
-				itemLabelPath: "label",
-				addLabel: "Add link",
-				fields: [
-					{ path: "label", label: "Label", kind: "text" },
-					{ path: "href", label: "Href", kind: "url", localization: "shared" },
-				],
 			},
 			{
 				path: "copyright",
@@ -220,6 +245,20 @@ export const dvePalochkiFooterDefinition = definePhotonBlockDefinition<FooterPro
 				kind: "text",
 				group: "content",
 				localization: "localized",
+			},
+			{
+				path: "creditLogoUrl",
+				label: "Credit logo URL",
+				kind: "image",
+				group: "content",
+				localization: "shared",
+			},
+			{
+				path: "creditLogoAlt",
+				label: "Credit logo alt",
+				kind: "text",
+				group: "content",
+				localization: "shared",
 			},
 		],
 	},

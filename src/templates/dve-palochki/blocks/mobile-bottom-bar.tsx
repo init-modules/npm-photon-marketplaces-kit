@@ -2,38 +2,31 @@
 
 import {
 	definePhotonBlockDefinition,
-	PhotonLink,
+	mobileBottomBarItemsSlot,
 	type PhotonBlock,
+	usePhotonResolvedSlot,
 } from "@init/photon/public";
-import { LayoutGrid, ShoppingCart, User } from "lucide-react";
+import type React from "react";
 
-type Item = {
-	id: string;
-	label: string;
-	href: string;
-	icon: "menu" | "cart" | "account";
-};
+/**
+ * Items come from contributions registered into the
+ * `mobile-bottom-bar.items` slot via `definePhotonSiteFrameContribution`.
+ * Inspector edits go through the `contribution-list` field on this
+ * block (per-profile overrides write into `siteSettings.contributionOverrides`).
+ */
+type MobileBottomBarProps = Record<string, never>;
 
-type MobileBottomBarProps = {
-	items: Item[];
-};
+const MOBILE_BOTTOM_BAR_BLOCK_TYPE =
+	"marketplaces.dve-palochki.mobile-bottom-bar";
 
-const ICONS = {
-	menu: LayoutGrid,
-	cart: ShoppingCart,
-	account: User,
-} as const;
-
-const MOBILE_BOTTOM_BAR_BLOCK_TYPE = "marketplaces.dve-palochki.mobile-bottom-bar";
-
-const MobileBottomBarBlock = ({
-	block,
-}: {
+const MobileBottomBarBlock = (_props: {
 	block: PhotonBlock<MobileBottomBarProps>;
 }) => {
-	const items = block.props.items;
+	const resolved = usePhotonResolvedSlot(mobileBottomBarItemsSlot);
 
-	if (!items.length) return null;
+	if (resolved.length === 0) {
+		return null;
+	}
 
 	return (
 		<div
@@ -41,17 +34,15 @@ const MobileBottomBarBlock = ({
 			className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--photon-site-border,#E5E5E5)] bg-[var(--photon-site-surface,#fff)] md:hidden"
 		>
 			<nav className="mx-auto flex max-w-md items-stretch justify-around">
-				{items.map((it) => {
-					const Icon = ICONS[it.icon] ?? LayoutGrid;
+				{resolved.map(({ contribution, resolved: r }) => {
+					const Component = contribution.component as React.ComponentType<
+						Record<string, unknown>
+					>;
 					return (
-						<PhotonLink
-							key={it.id}
-							href={it.href}
-							className="flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium text-[var(--photon-site-text,#0F0F0F)] hover:text-[var(--mp-accent,#E32636)]"
-						>
-							<Icon className="h-5 w-5" />
-							<span>{it.label}</span>
-						</PhotonLink>
+						<Component
+							key={r.contributionId}
+							{...(r as unknown as Record<string, unknown>)}
+						/>
 					);
 				})}
 			</nav>
@@ -64,37 +55,18 @@ export const dvePalochkiMobileBottomBarDefinition =
 		type: MOBILE_BOTTOM_BAR_BLOCK_TYPE,
 		label: "Mobile Bottom Bar (Dve Palochki)",
 		description:
-			"Fixed mobile bottom navigation with Catalog, Cart, Account shortcuts. Hidden on desktop.",
+			"Fixed mobile bottom navigation. Items contributed via mobile-bottom-bar.items slot.",
 		category: "Marketplaces / Dve Palochki",
 		icon: "panel-bottom-dashed",
 		component: MobileBottomBarBlock,
-		defaults: {
-			items: [],
-		},
+		defaults: {},
 		fields: [
 			{
-				path: "items",
+				path: "__contributions",
 				label: "Bottom bar items",
-				kind: "repeater",
+				kind: "contribution-list",
+				slotId: "mobile-bottom-bar.items",
 				group: "content",
-				localization: "localized",
-				itemLabelPath: "label",
-				addLabel: "Add item",
-				fields: [
-					{ path: "label", label: "Label", kind: "text" },
-					{ path: "href", label: "Href", kind: "url", localization: "shared" },
-					{
-						path: "icon",
-						label: "Icon",
-						kind: "select",
-						localization: "shared",
-						options: [
-							{ value: "menu", label: "Menu" },
-							{ value: "cart", label: "Cart" },
-							{ value: "account", label: "Account" },
-						],
-					},
-				],
 			},
 		],
 	});

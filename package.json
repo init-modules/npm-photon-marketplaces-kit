@@ -6,8 +6,14 @@
 	"main": "./src/index.ts",
 	"module": "./src/index.ts",
 	"types": "./src/index.ts",
+	"files": [
+		"src",
+		"public",
+		"README.md"
+	],
 	"exports": {
 		".": "./src/index.ts",
+		"./app": "./src/app.ts",
 		"./public": "./src/public.tsx",
 		"./module": "./src/module.tsx",
 		"./documents": "./src/documents.ts",

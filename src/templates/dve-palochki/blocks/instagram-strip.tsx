@@ -17,8 +17,9 @@ type Props = {
 const BLOCK_TYPE = "marketplaces.dve-palochki.instagram-strip";
 
 const InstagramStripBlock = ({ block }: { block: PhotonBlock<Props> }) => {
-	const { handle, ctaLabel, tiles } = block.props;
-	if (!tiles.length) return null;
+	const p = block.props;
+	if (!p.tiles || p.tiles.length < 4) return null;
+	const { handle, ctaLabel, tiles } = p;
 
 	const middle = (
 		<a

@@ -3,6 +3,7 @@ export { dvePalochkiCategoryShortcutsDefinition } from "./category-shortcuts";
 export { dvePalochkiContactsFormDefinition } from "./contacts-form";
 export { dvePalochkiContactsMapDefinition } from "./contacts-map";
 export { dvePalochkiDeliveryConditionsDefinition } from "./delivery-conditions";
+export { dvePalochkiDeliverySquareDefinition } from "./delivery-square";
 export { dvePalochkiFooterDefinition } from "./footer";
 export { dvePalochkiHeaderDefinition } from "./header";
 export { dvePalochkiHeroSliderDefinition } from "./hero-slider";
@@ -21,6 +22,7 @@ import { dvePalochkiCategoryShortcutsDefinition } from "./category-shortcuts";
 import { dvePalochkiContactsFormDefinition } from "./contacts-form";
 import { dvePalochkiContactsMapDefinition } from "./contacts-map";
 import { dvePalochkiDeliveryConditionsDefinition } from "./delivery-conditions";
+import { dvePalochkiDeliverySquareDefinition } from "./delivery-square";
 import { dvePalochkiFooterDefinition } from "./footer";
 import { dvePalochkiHeaderDefinition } from "./header";
 import { dvePalochkiHeroSliderDefinition } from "./hero-slider";
@@ -50,6 +52,7 @@ export const dvePalochkiBlockDefinitions = [
 	dvePalochkiAboutSectionDefinition,
 	dvePalochkiContactsMapDefinition,
 	dvePalochkiContactsFormDefinition,
+	dvePalochkiDeliverySquareDefinition,
 	dvePalochkiDeliveryConditionsDefinition,
 	dvePalochkiReviewsListDefinition,
 	dvePalochkiSuccessScreenDefinition,

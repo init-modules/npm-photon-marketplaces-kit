@@ -13,4 +13,6 @@ export {
 	marketplacesAccountProfileTab,
 	marketplacesPhotonSiteFrameExtension,
 } from "./sdk";
+export { createMarketplacesPhotonAppModule } from "./app";
+export * from "./contributions";
 export * from "./templates";

@@ -1,4 +1,26 @@
-import type { MarketplaceTemplateScenario } from "../../shared";
+import type {
+	LocalizedText,
+	MarketplaceTemplateScenario,
+} from "../../shared";
+
+/**
+ * Seed-side extension carrying the default `mobile-bottom-bar.items`
+ * contribution list. The actual block (`mobile-bottom-bar.tsx`)
+ * resolves items via slot contributions; these entries are picked
+ * up when the contribution module is wired (see
+ * `dve-palochki-parity-plan.md` A1). The block's own `defaults`
+ * stay empty per the defaults-removal plan.
+ */
+export type DvePalochkiMobileBottomBarItem = {
+	id: string;
+	label: LocalizedText;
+	href: string;
+	icon: string;
+};
+
+export type DvePalochkiScenarioExtras = {
+	mobileBottomBar: { items: readonly DvePalochkiMobileBottomBarItem[] };
+};
 
 /**
  * Default scenario for the `dve-palochki` family. Content mirrors
@@ -7,7 +29,8 @@ import type { MarketplaceTemplateScenario } from "../../shared";
  * intentionally not authored in v1 — see
  * `THATS_THE_WAY_IT_SHOULD_BE.md` decision "Locales".
  */
-export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario = {
+export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario &
+	DvePalochkiScenarioExtras = {
 	id: "marketplaces-dve-palochki-default",
 	familyId: "dve-palochki",
 	locales: ["ru", "kz"],
@@ -265,4 +288,32 @@ export const dvePalochkiDefaultScenario: MarketplaceTemplateScenario = {
 			route: "/privacy",
 		},
 	],
+	mobileBottomBar: {
+		items: [
+			{
+				id: "marketplace.mobile-bottom-bar.home",
+				label: { ru: "Главная", kz: "Басты" },
+				href: "/",
+				icon: "home",
+			},
+			{
+				id: "marketplace.mobile-bottom-bar.catalog",
+				label: { ru: "Каталог", kz: "Каталог" },
+				href: "/catalog",
+				icon: "layout-grid",
+			},
+			{
+				id: "marketplace.mobile-bottom-bar.cart",
+				label: { ru: "Корзина", kz: "Себет" },
+				href: "/checkout",
+				icon: "shopping-cart",
+			},
+			{
+				id: "marketplace.mobile-bottom-bar.profile",
+				label: { ru: "Профиль", kz: "Профиль" },
+				href: "/account",
+				icon: "user",
+			},
+		],
+	},
 };

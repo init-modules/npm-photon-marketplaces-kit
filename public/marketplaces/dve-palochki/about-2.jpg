@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" preserveAspectRatio="xMidYMid slice">
+	<rect width="1200" height="675" fill="#F5F4F2"/>
+	<rect x="40" y="40" width="1120" height="595" fill="none" stroke="#E32636" stroke-width="6"/>
+	<text x="600" y="320" fill="#0F0F0F" font-family="Inter, system-ui, sans-serif" font-size="72" font-weight="700" text-anchor="middle">ABOUT · NIGIRI PLATING</text>
+	<text x="600" y="400" fill="#5C5C5C" font-family="Inter, system-ui, sans-serif" font-size="32" text-anchor="middle">about-2 placeholder · 1200×675</text>
+</svg>

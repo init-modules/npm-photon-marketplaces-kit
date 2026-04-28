@@ -35,6 +35,7 @@ const ContactsFormBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 				className="mt-6 grid gap-3 sm:grid-cols-3"
 				onSubmit={(e) => {
 					e.preventDefault();
+					// TODO: integrate with backend submit endpoint
 					/*
 					 * v1: this is a no-op stub. The interaction action
 					 * `marketplaces.contact-request` will be wired in once
@@ -98,6 +99,42 @@ export const dvePalochkiContactsFormDefinition = definePhotonBlockDefinition<Pro
 				path: "subtitle",
 				label: "Subtitle",
 				kind: "textarea",
+				localization: "localized",
+			},
+			{
+				path: "namePlaceholder",
+				label: "Name placeholder",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "emailPlaceholder",
+				label: "Email placeholder",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "phonePlaceholder",
+				label: "Phone placeholder",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "messagePlaceholder",
+				label: "Message placeholder",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "submitLabel",
+				label: "Submit label",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "successMessage",
+				label: "Success message",
+				kind: "text",
 				localization: "localized",
 			},
 		],

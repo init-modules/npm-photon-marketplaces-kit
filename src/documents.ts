@@ -5,6 +5,7 @@ import type {
 } from "@init/photon";
 import {
 	getMarketplaceTemplateFamily,
+	localized,
 	type MarketplaceLocale,
 	type MarketplaceTemplateFamilyId,
 	type MarketplaceTemplateScenario,
@@ -26,6 +27,119 @@ const createDocument = (
 	updatedAt,
 	blocks: clone(blocks),
 });
+
+export type MarketplacePageSeo = { title: string; description: string };
+
+/**
+ * Localized SEO description templates per page key. Each function
+ * receives `{brand, locale}` and returns the description string.
+ * Title is derived from `brand + " — " + pageName` so it stays
+ * consistent across pages without per-key overrides.
+ */
+const SEO_DESCRIPTION_TEMPLATES: Record<
+	string,
+	(brand: string, locale: MarketplaceLocale) => string
+> = {
+	home: (brand, l) =>
+		l === "kz"
+			? `${brand} — суши, роллдар жəне сеттер. Жылдам жеткізу.`
+			: l === "en"
+				? `${brand} — sushi, rolls, and sets. Fast delivery.`
+				: `${brand} — суши, роллы и сеты. Быстрая доставка.`,
+	catalog: (brand, l) =>
+		l === "kz"
+			? `${brand} ассортименті: роллдар, наборлар, нигири, түнки.`
+			: l === "en"
+				? `${brand} catalog: rolls, sets, nigiri, snacks.`
+				: `Каталог ${brand}: роллы, наборы, нигири, закуски.`,
+	product: (brand, l) =>
+		l === "kz"
+			? `${brand} мəзірінен өнім.`
+			: l === "en"
+				? `Product from ${brand} menu.`
+				: `Товар из меню ${brand}.`,
+	cart: (_brand, l) =>
+		l === "kz"
+			? "Сіздің себетіңіз."
+			: l === "en"
+				? "Your cart."
+				: "Ваша корзина.",
+	checkout: (_brand, l) =>
+		l === "kz"
+			? "Тапсырысты ресімдеу."
+			: l === "en"
+				? "Checkout."
+				: "Оформление заказа.",
+	"account-orders": (_brand, l) =>
+		l === "kz"
+			? "Менің тапсырыстарым."
+			: l === "en"
+				? "My orders."
+				: "Мои заказы.",
+	"account-profile": (_brand, l) =>
+		l === "kz"
+			? "Жеке профилім."
+			: l === "en"
+				? "My profile."
+				: "Мой профиль.",
+	about: (brand, l) =>
+		l === "kz"
+			? `${brand} туралы.`
+			: l === "en"
+				? `About ${brand}.`
+				: `О компании ${brand}.`,
+	contacts: (brand, l) =>
+		l === "kz"
+			? `${brand} байланыстары: телефон, мекенжай, жұмыс уақыты.`
+			: l === "en"
+				? `${brand} contacts: phone, address, hours.`
+				: `Контакты ${brand}: телефон, адрес, часы работы.`,
+	"payment-and-delivery": (_brand, l) =>
+		l === "kz"
+			? "Төлем жəне жеткізу шарттары."
+			: l === "en"
+				? "Payment and delivery terms."
+				: "Условия оплаты и доставки.",
+	privacy: (_brand, l) =>
+		l === "kz"
+			? "Құпиялылық саясаты."
+			: l === "en"
+				? "Privacy policy."
+				: "Политика конфиденциальности.",
+	reviews: (brand, l) =>
+		l === "kz"
+			? `${brand} клиенттерінің пікірлері.`
+			: l === "en"
+				? `${brand} customer reviews.`
+				: `Отзывы клиентов ${brand}.`,
+	success: (_brand, l) =>
+		l === "kz"
+			? "Тапсырыс қабылданды."
+			: l === "en"
+				? "Order confirmed."
+				: "Заказ принят.",
+	"not-found": (_brand, l) =>
+		l === "kz"
+			? "Бет табылмады."
+			: l === "en"
+				? "Page not found."
+				: "Страница не найдена.",
+};
+
+const buildPageSeo = (
+	scenario: MarketplaceTemplateScenario,
+	locale: MarketplaceLocale,
+	pageKey: string,
+	pageName: string,
+): MarketplacePageSeo => {
+	const brand = localized(scenario.brand, locale);
+	const descTemplate = SEO_DESCRIPTION_TEMPLATES[pageKey];
+	const description = descTemplate
+		? descTemplate(brand, locale)
+		: localized(scenario.tagline, locale);
+	const title = pageKey === "home" ? brand : `${pageName} — ${brand}`;
+	return { title, description };
+};
 
 export type MarketplacesProfileStarterPresetId =
 	`marketplaces-${MarketplaceTemplateFamilyId}`;
@@ -114,12 +228,14 @@ export const createMarketplacesProfileDocumentTree = (input: {
 	documents: PhotonDocumentsMap;
 	siteRegions: Record<"header" | "footer", PhotonDocument>;
 	siteSettingsPatch: Record<string, unknown>;
+	pageSeo: Record<string, MarketplacePageSeo>;
 } => {
 	const family = getMarketplaceTemplateFamily(input.familyId);
 	const scenario = input.scenarioOverride ?? family.defaultScenario;
 	const locale = input.locale ?? scenario.defaultLocale;
 
 	const docs: PhotonDocumentsMap = {};
+	const pageSeo: Record<string, MarketplacePageSeo> = {};
 
 	const add = (
 		pageKey: string,
@@ -129,6 +245,7 @@ export const createMarketplacesProfileDocumentTree = (input: {
 	) => {
 		const doc = buildPageDocument(family.id, scenario.id, pageKey, name, route, blocks);
 		docs[doc.id] = doc;
+		pageSeo[doc.id] = buildPageSeo(scenario, locale, pageKey, name);
 	};
 
 	add(
@@ -246,6 +363,7 @@ export const createMarketplacesProfileDocumentTree = (input: {
 		documents: docs,
 		siteRegions,
 		siteSettingsPatch: family.createSiteSettingsPatch(scenario, locale),
+		pageSeo,
 	};
 };
 

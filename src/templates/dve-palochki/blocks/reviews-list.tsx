@@ -5,6 +5,7 @@ import {
 	type PhotonBlock,
 } from "@init/photon/public";
 import { MessageSquare, Star } from "lucide-react";
+import { useState } from "react";
 
 type Review = {
 	id: string;
@@ -49,8 +50,49 @@ const Stars = ({ value }: { value: number }) => (
 	</div>
 );
 
+const StarPicker = ({
+	value,
+	onChange,
+}: {
+	value: number;
+	onChange: (next: number) => void;
+}) => (
+	<div role="radiogroup" aria-label="Rating" className="inline-flex items-center gap-0.5">
+		{Array.from({ length: 5 }, (_, i) => {
+			const starValue = i + 1;
+			const filled = starValue <= value;
+			return (
+				<button
+					key={i}
+					type="button"
+					role="radio"
+					aria-checked={value === starValue}
+					aria-label={`${starValue} of 5 stars`}
+					onClick={() => onChange(starValue)}
+					className="rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mp-accent,#E32636)]"
+				>
+					<Star
+						className={[
+							"h-5 w-5 transition",
+							filled
+								? "fill-amber-400 text-amber-400"
+								: "text-[color:rgba(0,0,0,0.25)] hover:text-amber-400",
+						].join(" ")}
+					/>
+				</button>
+			);
+		})}
+	</div>
+);
+
 const ReviewsListBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 	const p = block.props;
+	const [rating, setRating] = useState<number>(5);
+
+	// TODO: wire to the marketplace auth runtime once a hook is exposed
+	// from `@init/auth-photon`. Until then, the form is hidden by default
+	// so anonymous visitors don't see a non-functional submit.
+	const isAuthenticated = false;
 
 	if (!p.formTitle && !p.emptyTitle && !p.formSubmitLabel) return null;
 
@@ -95,36 +137,38 @@ const ReviewsListBlock = ({ block }: { block: PhotonBlock<Props> }) => {
 					</div>
 				</div>
 			)}
-			<form
-				className="space-y-3 rounded-lg border border-[var(--photon-site-border,#E5E5E5)] p-4"
-				onSubmit={(e) => e.preventDefault()}
-			>
-				<h3 className="text-base font-semibold">{p.formTitle}</h3>
-				<Stars value={5} />
-				<textarea
-					rows={4}
-					placeholder={p.formBodyPlaceholder}
-					className="w-full rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
-				/>
-				<div className="grid gap-3 sm:grid-cols-2">
-					<input
-						type="text"
-						placeholder={p.formNamePlaceholder}
-						className="rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
-					/>
-					<input
-						type="email"
-						placeholder={p.formEmailPlaceholder}
-						className="rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
-					/>
-				</div>
-				<button
-					type="submit"
-					className="rounded-md border border-[var(--mp-accent,#E32636)] px-4 py-2 text-sm font-semibold text-[var(--mp-accent,#E32636)] transition hover:bg-[var(--mp-accent,#E32636)] hover:text-white"
+			{isAuthenticated ? (
+				<form
+					className="space-y-3 rounded-lg border border-[var(--photon-site-border,#E5E5E5)] p-4"
+					onSubmit={(e) => e.preventDefault()}
 				>
-					{p.formSubmitLabel}
-				</button>
-			</form>
+					<h3 className="text-base font-semibold">{p.formTitle}</h3>
+					<StarPicker value={rating} onChange={setRating} />
+					<textarea
+						rows={4}
+						placeholder={p.formBodyPlaceholder}
+						className="w-full rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
+					/>
+					<div className="grid gap-3 sm:grid-cols-2">
+						<input
+							type="text"
+							placeholder={p.formNamePlaceholder}
+							className="rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
+						/>
+						<input
+							type="email"
+							placeholder={p.formEmailPlaceholder}
+							className="rounded-md border border-[var(--photon-site-border,#E5E5E5)] px-3 py-2 text-sm outline-none focus:border-[var(--mp-accent,#E32636)]"
+						/>
+					</div>
+					<button
+						type="submit"
+						className="rounded-md border border-[var(--mp-accent,#E32636)] px-4 py-2 text-sm font-semibold text-[var(--mp-accent,#E32636)] transition hover:bg-[var(--mp-accent,#E32636)] hover:text-white"
+					>
+						{p.formSubmitLabel}
+					</button>
+				</form>
+			) : null}
 		</section>
 	);
 };
@@ -149,6 +193,18 @@ export const dvePalochkiReviewsListDefinition = definePhotonBlockDefinition<Prop
 			reviews: [],
 		},
 		fields: [
+			{
+				path: "formSubmitLabel",
+				label: "Form submit label",
+				kind: "text",
+				localization: "localized",
+			},
+			{
+				path: "adminReplyLabel",
+				label: "Admin reply label",
+				kind: "text",
+				localization: "localized",
+			},
 			{
 				path: "reviews",
 				label: "Reviews",

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" preserveAspectRatio="xMidYMid slice">
+	<rect width="1200" height="675" fill="#0F0F0F"/>
+	<rect x="40" y="40" width="1120" height="595" fill="none" stroke="#E32636" stroke-width="6"/>
+	<text x="600" y="320" fill="#FFFFFF" font-family="Inter, system-ui, sans-serif" font-size="92" font-weight="700" text-anchor="middle">HALAL</text>
+	<text x="600" y="400" fill="#A1A1A1" font-family="Inter, system-ui, sans-serif" font-size="32" text-anchor="middle">hero-halal placeholder · 1200×675</text>
+</svg>
