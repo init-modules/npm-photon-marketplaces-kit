@@ -6,27 +6,19 @@ import {
 	type PhotonModule,
 } from "@init/photon/public";
 import {
+	marketplaceBlockDefinitions,
 	marketplacesAccountProfileTab,
+	marketplacesPhotonModuleDescriptor,
 	marketplacesPhotonSiteFrameExtension,
-} from "./sdk";
-import { marketplaceBlockDefinitions } from "./templates";
+} from "./shared/block-renderers";
 
-/**
- * Public-runtime mirror of `marketplacesPhotonModule`. Same block
- * definitions — Photon resolves the public-runtime kit via
- * `package.json#photon.publicInstallableKitImportPath` and renders
- * blocks from the public bundle, keeping admin/studio modules out
- * of the public payload.
- */
 export const marketplacesPublicPhotonModule: PhotonModule = {
-	module: "marketplaces-photon",
-	label: "Marketplaces",
-	labelKey: "marketplacesKit.module.label",
-	version: "0.1.0",
+	...marketplacesPhotonModuleDescriptor,
 	blocks: [...marketplaceBlockDefinitions],
 };
 
 export const marketplacesPublicPhotonKit: PhotonInstallableKit = createPhotonKit({
+	kind: "photon-installable-kit",
 	key: "marketplaces",
 	label: "Marketplaces",
 	modules: [marketplacesPublicPhotonModule],

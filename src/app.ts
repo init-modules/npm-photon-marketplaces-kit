@@ -11,10 +11,23 @@ import {
 	createMarketplacesProfileDocumentTree,
 	marketplacesProfileStarterPresets,
 } from "./documents";
+import { coerceInterfaceLocale } from "@init/photon/shared";
 import type { MarketplaceLocale } from "./templates";
 
-const isMarketplaceLocale = (value: string): value is MarketplaceLocale =>
-	value === "ru" || value === "en";
+const MARKETPLACE_SUPPORTED_LOCALES: readonly MarketplaceLocale[] = [
+	"ru",
+	"kz",
+	"en",
+];
+
+export const coerceMarketplaceLocale = (
+	value: string | null | undefined,
+	fallback: MarketplaceLocale = "ru",
+): MarketplaceLocale =>
+	coerceInterfaceLocale(value, {
+		supported: MARKETPLACE_SUPPORTED_LOCALES,
+		fallback,
+	}) as MarketplaceLocale;
 
 const toLaravelTree = (
 	mt: ReturnType<typeof createMarketplacesProfileDocumentTree>,
@@ -73,9 +86,14 @@ const createMarketplacesStarterTree = (
 	requestedLocale: string,
 	source: PhotonSdkProfileStarterSource,
 ): Record<string, unknown> => {
-	if (source.type !== "preset" || !source.sourceId) {
+	if (source.type !== "preset") {
 		throw new Error(
-			`Marketplaces tree factory requires a preset source. Got ${source.type}/${source.sourceId ?? ""}.`,
+			`Marketplaces tree factory requires a preset source. Got ${source.type}.`,
+		);
+	}
+	if (!source.sourceId) {
+		throw new Error(
+			"Marketplaces tree factory requires a preset source with a sourceId.",
 		);
 	}
 	const preset = marketplacesProfileStarterPresets.find(
@@ -86,9 +104,10 @@ const createMarketplacesStarterTree = (
 			`Unknown marketplaces preset id: ${source.sourceId}. Registered: ${presetIds.join(", ")}`,
 		);
 	}
-	const locale: MarketplaceLocale = isMarketplaceLocale(requestedLocale)
-		? requestedLocale
-		: preset.starterRecipe.locale;
+	const locale: MarketplaceLocale = coerceMarketplaceLocale(
+		requestedLocale,
+		preset.starterRecipe.locale,
+	);
 
 	const tree = createMarketplacesProfileDocumentTree({
 		familyId: preset.familyId,

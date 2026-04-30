@@ -10,6 +10,9 @@ export * from "./shared";
  * `documents.ts`, `sdk.ts`, and the studio palette pick up the new
  * family from this list.
  */
+// TODO(s4-marketplaces): registry intentionally empty until real marketplace
+// template families are seeded (see
+// tests/nextjs/contracts/marketplaces-kit-preset-documents.placeholder.test.ts).
 export const marketplaceTemplateFamilies = [] as const satisfies readonly MarketplaceTemplateFamily[];
 
 export type MarketplaceTemplateFamilyId =
